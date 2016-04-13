@@ -15,7 +15,7 @@
     "无"
   ],
   "author": "swg",
-  "license": "UNLICENSED",
+  "license": "GNU",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-load-plugins": "^1.2.0",
