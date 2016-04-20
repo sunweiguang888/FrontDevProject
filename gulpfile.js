@@ -12,14 +12,16 @@ var	uglify = require('gulp-uglify'),		// js压缩混淆
 	minifyHtml = require('gulp-minify-html'),		// html压缩
 	imagemin = require('gulp-imagemin'),		// 图片压缩
 	liveReload = require('gulp-livereload'),		// 文件变化时自动刷新浏览器
-	minifyCss = require('gulp-minify-css')	// css压缩
+	minifyCss = require('gulp-minify-css'),	// css压缩
+	webpack = require('webpack-stream')		//webpack
 ;
 
 // ************************************ 编译(npm start) ************************************
 // 任务入口
 gulp.task('default', [
 		'compileCss',
-		'watchCss'
+		'watchCss',
+		'compileJs'
 	], function () {
 		console.log('全部任务已执行。');
 	}
@@ -39,6 +41,14 @@ gulp.task('watchCss', function () {
 	gulp.watch('src/scss/*.scss', ['compileCss'], function (event) {
 		console.log('sass被修改。'+event.path);
 	});
+});
+
+gulp.task('compileJs', function () {
+	gulp.src('src/js/entry.js')
+		.pipe(webpack(require("./webpack.config.js")))
+		.pipe(gulp.dest('.build/js'))
+	;
+	console.log('js预编译已执行。');
 });
 
 // ************************************ 发布 ************************************
