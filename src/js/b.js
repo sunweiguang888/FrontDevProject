@@ -3,6 +3,9 @@
  */
 
 
+//var $body = $('body');
+debugger
+
 module.exports = function() {
-	this.name = '哈哈哈1111';
+	this.name = '哈哈哈1111333ffffff3';
 };

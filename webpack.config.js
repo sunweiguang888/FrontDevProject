@@ -1,14 +1,15 @@
 /**
  * Created by weiguangsun on 2016/4/20.
  */
-var fs = require('fs');
+var fs = require('fs')
+webpack = require('webpack');
 
 module.exports = {
-	entry: function() {
+	entry: function () {
 		var entry = {},
 			jsArr = fs.readdirSync('./src/js/'),
 			js;
-		for(var i in jsArr){
+		for (var i in jsArr) {
 			js = jsArr[i];
 			entry[js.replace('.js', '')] = './src/js/' + js;
 		}
@@ -16,13 +17,28 @@ module.exports = {
 		return entry;
 	}(),
 	output: {
-		path: __dirname + '/build/js',
-		publicPath: '../../js/',
-		filename: "[name].bundle.js"
+		path: __dirname + '/build/js',	//__dirname 是当前模块文件所在目录的完整绝对路径
+		//publicPath: '../../js/',		//网站运行时的访问路径 未知
+		filename: "[name].js"
 	},
 	module: {
 		loaders: [
-			{ test: /\.css$/, loader: "style!css" }
+			{test: /\.css$/, loader: "style!css"}
 		]
-	}
+	},
+	resolve: {
+		alias: {
+			jquery: __dirname + '/lib/jquery.min.js'
+		}
+	},
+	plugins: [
+		//提供全局的变量，在模块中使用无需用require引入
+		new webpack.ProvidePlugin({
+			jQuery: "jquery",
+			$: "jquery",
+		}),
+		//new webpack.BannerPlugin('This file is created by swg'),
+		//将公共代码抽离出来合并为一个文件
+		new webpack.optimize.CommonsChunkPlugin('common.bundle.js'),
+	]
 };

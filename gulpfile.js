@@ -12,64 +12,59 @@ var	uglify = require('gulp-uglify'),		// js压缩混淆
 	minifyHtml = require('gulp-minify-html'),		// html压缩
 	imagemin = require('gulp-imagemin'),		// 图片压缩
 	liveReload = require('gulp-livereload'),		// 文件变化时自动刷新浏览器
-	minifyCss = require('gulp-minify-css'),	// css压缩
+	minifyCss = require('gulp-minify-css'),		// css压缩
+	replace = require('gulp-replace'),		// 文件清除
+	clean = require('gulp-clean'),	// css压缩
 	webpack = require('webpack-stream')		//webpack
 ;
 
-// ************************************ 编译(npm start) ************************************
+// ************************************ 文件编译(npm start) ************************************
 // 任务入口
 gulp.task('default', [
-		'compileCss',
-		'watchCss',
-		'compileJs'
+		'compileSass',
+		'watchSass',
+		'compileJs',
+		'watchJs',
+		'compileImg',
+		'watchImg',
+		'compileHtml',
+		'watchHtml'
 	], function () {
-		console.log('全部任务已执行。');
+		console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + new Date());
 	}
 );
-
-// sass预编译，css压缩
-gulp.task('compileCss', function () {
+// sass文件编译
+gulp.task('compileSass', function () {
+	gulp.src('build/css').pipe(clean());
+	gulp.src('deploy/css').pipe(clean());
 	gulp.src('src/scss/*.scss')
+		// 开发环境
 		.pipe(sass({outputStyle: 'uncompressed'}))
-		.pipe(gulp.dest('.build/css'))
-		.pipe(liveReload())		// scss文件变化时自动刷新浏览器
-	;
-	console.log('sass预编译已执行。');
-});
-gulp.task('watchCss', function () {
-	liveReload.listen();		// 文件变化时自动刷新浏览器
-	gulp.watch('src/scss/*.scss', ['compileCss'], function (event) {
-		console.log('sass被修改。'+event.path);
-	});
-});
-
-gulp.task('compileJs', function () {
-	gulp.src('src/js/entry.js')
-		.pipe(webpack(require("./webpack.config.js")))
-		.pipe(gulp.dest('.build/js'))
-	;
-	console.log('js预编译已执行。');
-});
-
-// ************************************ 发布 ************************************
-gulp.task('deploy', ['deployCss', 'deployJs', 'deployHtml', 'deployImg'], function () {
-	console.log('已发布');
-});
-
-// 发布css
-gulp.task('deployCss', function () {
-	gulp.src('src/scss/*.scss')
-		.pipe(sass({outputStyle: 'uncompressed'}))
+		.pipe(gulp.dest('build/css'))
+		// 正式环境
 		.pipe(minifyCss())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('deploy/css'))
+		//待解决
+		.pipe(liveReload())		// scss文件变化时自动刷新浏览器
 	;
-	console.log('sass预编译已执行。');
+	console.log('>>>>>>>>>>>>>>> sass文件编译完毕。' + new Date());
+});
+// sass文件修改监听
+gulp.task('watchSass', function () {
+	liveReload.listen();	//待解决	// 文件变化时自动刷新浏览器
+	gulp.watch('src/scss/*.scss', ['compileSass']);
 });
 
-// 发布js
-gulp.task('deployJs', function () {
-	gulp.src('src/js/*.js')
+// js文件编译（webpack）
+gulp.task('compileJs', function () {
+	gulp.src('build/js').pipe(clean());
+	gulp.src('deploy/js').pipe(clean());
+	gulp.src('build/js')
+		// 开发环境
+		.pipe(webpack(require("./webpack.config.js")))
+		.pipe(gulp.dest('build/js'))
+		// 正式环境
 		.pipe(uglify({
 			mangle: true,  // 类型：Boolean 默认：true 是否修改变量名
 			compress: true,  // 类型：Boolean 默认：true 是否完全压缩
@@ -78,25 +73,44 @@ gulp.task('deployJs', function () {
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('deploy/js'))
 	;
-	console.log('js压缩已执行。');
+	console.log('>>>>>>>>>>>>>>> js文件编译完毕。' + new Date());
+});
+// js文件修改监听
+gulp.task('watchJs', function () {
+	gulp.watch('src/js/*.js', ['compileJs']);
 });
 
-// 发布js
-gulp.task('deployImg', function () {
+// 图片文件编译
+gulp.task('compileImg', function () {
+	gulp.src('deploy/images').pipe(clean());
 	gulp.src('src/images/**/*.*')
+		// 开发环境
+		// 正式环境
 		.pipe(imagemin())
 		.pipe(gulp.dest('deploy/images'))
 	;
-	console.log('images压缩已执行。');
+	console.log('>>>>>>>>>>>>>>> 图片文件编译完毕。' + new Date());
+});
+// 图片文件修改监听
+gulp.task('watchImg', function () {
+	gulp.watch('src/images/**/*.*', ['compileImg']);
 });
 
-
-
-// 发布html
-gulp.task('deployHtml', function () {
+// html文件编译
+gulp.task('compileHtml', function () {
+	gulp.src('deploy/*.html').pipe(clean());
 	gulp.src('src/*.html')
+		// 开发环境
+		// 正式环境
+		.pipe(replace('../build/', './'))
+		.pipe(replace('.css', '.min.css?v=' + Date.now()))
+		.pipe(replace('.js', '.min.js?v=' + Date.now()))
 		.pipe(minifyHtml())
 		.pipe(gulp.dest('deploy'))
 	;
-	console.log('js压缩已执行。');
+	console.log('>>>>>>>>>>>>>>> html文件编译完毕。' + new Date());
+});
+// html文件修改监听
+gulp.task('watchHtml', function () {
+	gulp.watch('src/*.html', ['compileHtml']);
 });
