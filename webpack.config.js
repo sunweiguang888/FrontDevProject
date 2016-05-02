@@ -23,7 +23,8 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			{test: /\.css$/, loader: "style!css"}
+			//{test: /\.css$/, loader: "style!css"},	不好用// 表示.css文件用style-loader或css-loader来解析
+			{test: /\.tpl$/, loader: "tmodjs"}	// artTemplate的webpack版
 		]
 	},
 	resolve: {
