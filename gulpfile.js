@@ -15,12 +15,14 @@ var	uglify = require('gulp-uglify'),		// js压缩混淆
 	minifyCss = require('gulp-minify-css'),		// css压缩
 	replace = require('gulp-replace'),		// 文件清除
 	clean = require('gulp-clean'),	// css压缩
+	runSequence = require('run-sequence'),	// 使gulp任务按顺序执行，因为gulp里任务默认是异步执行的
 	webpack = require('webpack-stream')		//webpack
 ;
 
 // ************************************ 文件编译(npm start) ************************************
 // 任务入口
-gulp.task('default', [
+gulp.task('default', [], function () {
+	runSequence('clean',
 		'compileSass',
 		'watchSass',
 		'compileJs',
@@ -28,16 +30,20 @@ gulp.task('default', [
 		'compileImg',
 		'watchImg',
 		'compileHtml',
-		'watchHtml'
-	], function () {
-		console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + new Date());
-	}
-);
+		'watchHtml',
+		function(){
+			console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + new Date());
+		}
+	);
+});
+// sass目录清理
+gulp.task('clean', function () {
+	return gulp.src('build').pipe(clean()) && gulp.src('deploy').pipe(clean());
+});
 // sass文件编译
 gulp.task('compileSass', function () {
-	gulp.src('build/css').pipe(clean());
-	gulp.src('deploy/css').pipe(clean());
-	gulp.src('src/scss/*.scss')
+	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + new Date());
+	return gulp.src('src/scss/*.scss')		// return这个流是为了保证任务按顺序执行
 		// 开发环境
 		.pipe(sass({outputStyle: 'uncompressed'}))
 		.pipe(gulp.dest('build/css'))
@@ -48,7 +54,6 @@ gulp.task('compileSass', function () {
 		//待解决
 		.pipe(liveReload())		// scss文件变化时自动刷新浏览器
 	;
-	console.log('>>>>>>>>>>>>>>> sass文件编译完毕。' + new Date());
 });
 // sass文件修改监听
 gulp.task('watchSass', function () {
@@ -58,9 +63,8 @@ gulp.task('watchSass', function () {
 
 // js文件编译（webpack）
 gulp.task('compileJs', function () {
-	gulp.src('build/js').pipe(clean());
-	gulp.src('deploy/js').pipe(clean());
-	gulp.src('build/js')
+	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + new Date());
+	return gulp.src('build/js')
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
 		.pipe(gulp.dest('build/js'))
@@ -73,7 +77,6 @@ gulp.task('compileJs', function () {
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('deploy/js'))
 	;
-	console.log('>>>>>>>>>>>>>>> js文件编译完毕。' + new Date());
 });
 // js文件修改监听
 gulp.task('watchJs', function () {
@@ -82,14 +85,13 @@ gulp.task('watchJs', function () {
 
 // 图片文件编译
 gulp.task('compileImg', function () {
-	gulp.src('deploy/images').pipe(clean());
-	gulp.src('src/images/**/*.*')
+	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + new Date());
+	return gulp.src('src/images/**/*.*')
 		// 开发环境
 		// 正式环境
 		.pipe(imagemin())
 		.pipe(gulp.dest('deploy/images'))
 	;
-	console.log('>>>>>>>>>>>>>>> 图片文件编译完毕。' + new Date());
 });
 // 图片文件修改监听
 gulp.task('watchImg', function () {
@@ -98,8 +100,8 @@ gulp.task('watchImg', function () {
 
 // html文件编译
 gulp.task('compileHtml', function () {
-	gulp.src('deploy/*.html').pipe(clean());
-	gulp.src('src/*.html')
+	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + new Date());
+	return gulp.src('src/*.html')
 		// 开发环境
 		// 正式环境
 		.pipe(replace('../build/', './'))
@@ -108,7 +110,6 @@ gulp.task('compileHtml', function () {
 		.pipe(minifyHtml())
 		.pipe(gulp.dest('deploy'))
 	;
-	console.log('>>>>>>>>>>>>>>> html文件编译完毕。' + new Date());
 });
 // html文件修改监听
 gulp.task('watchHtml', function () {
