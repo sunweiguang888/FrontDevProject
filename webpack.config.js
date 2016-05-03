@@ -23,8 +23,10 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			//{test: /\.css$/, loader: "style!css"},	不好用// 表示.css文件用style-loader或css-loader来解析
-			{test: /\.tpl$/, loader: "tmodjs"}	// artTemplate的webpack版
+			{test: /\.css$/, loaders: ['style', 'css']},	// 前者将 css 文件以 <style></style> 标签插入 <head> 头部，后者负责解读、加载 CSS 文件。
+			{test: /\.tpl$/, loader: "tmodjs"},	// artTemplate的webpack版
+			{test: /\.json$/, loader: "json"},	// artTemplate的webpack版
+			{test: /\.png$/, loader: "url-loader?limit=100000" }
 		]
 	},
 	resolve: {

@@ -4,6 +4,9 @@
 function Demo() {
     this.name = '哈哈哈';
     var eeeeeee = require('../tpl/demo.tpl')({a: '威风威风'});
-    debugger
+	//var fffffff = require('../relevanceJoke.json');
+	//var fwwwws = require('url../images/无标题.png');
+	var wefw = require('../demo.css')
+	debugger
 };
 new Demo();
