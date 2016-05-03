@@ -23,10 +23,11 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			{test: /\.css$/, loaders: ['style', 'css']},	// 前者将 css 文件以 <style></style> 标签插入 <head> 头部，后者负责解读、加载 CSS 文件。
+			{test: /\.css$/, loaders: ['style', 'css']},	// style-loader,css-loader共同作用于.css文件。 前者将 css 文件以 <style></style> 标签插入 <head> 头部，后者负责解读、加载 CSS 文件。
+			{test: /\.scss$/, loader: 'style!css!sass'},	// sass-loader 加载sass文件。等价于上面数组写法。
 			{test: /\.tpl$/, loader: "tmodjs"},	// artTemplate的webpack版
-			{test: /\.json$/, loader: "json"},	// artTemplate的webpack版
-			{test: /\.png$/, loader: "url-loader?limit=100000" }
+			{test: /\.json$/, loader: "json"},	// json-loader，.json一般用于放假数据
+			//{test: /\.png$/, loader: "url-loader?limit=102400" }	引起gulp-uglify报错，原因不详// require100KB以下的图片将得到base64编码
 		]
 	},
 	resolve: {
