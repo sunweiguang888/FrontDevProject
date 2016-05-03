@@ -36,13 +36,14 @@ module.exports = {
 		}
 	},
 	plugins: [
-		//提供全局的变量，在模块中使用无需用require引入
+		// 提供全局的变量，在模块中使用无需用require引入
 		new webpack.ProvidePlugin({
 			jQuery: "jquery",
 			$: "jquery",
 		}),
-		//new webpack.BannerPlugin('This file is created by swg'),
-		//将公共代码抽离出来合并为一个文件
+		// 给webpack编译过的js文件加banner
+		new webpack.BannerPlugin('This file is created by swg ' + new Date()),
+		// 将公共代码抽离出来合并为一个文件
 		new webpack.optimize.CommonsChunkPlugin('common.bundle.js'),
 	]
 };
