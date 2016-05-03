@@ -11,7 +11,7 @@ var	uglify = require('gulp-uglify'),		// js压缩混淆
 	concat = require('gulp-concat'),			// 文件合并 .pipe(concat('all.js'))
 	minifyHtml = require('gulp-minify-html'),		// html压缩
 	imagemin = require('gulp-imagemin'),		// 图片压缩
-	liveReload = require('gulp-livereload'),		// 文件变化时自动刷新浏览器
+	liveReload = require('gulp-livereload'),		// 文件变化时自动刷新浏览器，chrome需要安装LiveReload插件
 	minifyCss = require('gulp-minify-css'),		// css压缩
 	replace = require('gulp-replace'),		// 文件清除
 	clean = require('gulp-clean'),	// css压缩
@@ -56,7 +56,7 @@ gulp.task('compileSass', function () {
 });
 // sass文件修改监听
 gulp.task('watchSass', function () {
-	liveReload.listen();	//待解决	// 文件变化时自动刷新浏览器
+	liveReload.listen();	//开启liveReload
 	gulp.watch('src/scss/*.scss', ['compileSass']);
 });
 
