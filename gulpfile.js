@@ -47,12 +47,11 @@ gulp.task('compileSass', function () {
 		// 开发环境
 		.pipe(sass({outputStyle: 'uncompressed'}))
 		.pipe(gulp.dest('build/css'))
+		.pipe(liveReload())
 		// 正式环境
 		.pipe(minifyCss())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('deploy/css'))
-		//待解决
-		.pipe(liveReload())		// scss文件变化时自动刷新浏览器
 	;
 });
 // sass文件修改监听
@@ -68,6 +67,7 @@ gulp.task('compileJs', function () {
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
 		.pipe(gulp.dest('build/js'))
+		.pipe(liveReload())
 		// 正式环境
 		.pipe(uglify({
 			mangle: true,  // 类型：Boolean 默认：true 是否修改变量名
@@ -88,6 +88,7 @@ gulp.task('compileImg', function () {
 	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + new Date());
 	return gulp.src('src/images/**/*.*')
 		// 开发环境
+		.pipe(liveReload())
 		// 正式环境
 		.pipe(imagemin())
 		.pipe(gulp.dest('deploy/images'))
@@ -103,6 +104,7 @@ gulp.task('compileHtml', function () {
 	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + new Date());
 	return gulp.src('src/*.html')
 		// 开发环境
+		.pipe(liveReload())
 		// 正式环境
 		.pipe(replace('../build/', './'))
 		.pipe(replace('.css', '.min.css?v=' + Date.now()))
