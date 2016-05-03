@@ -2,6 +2,7 @@
  * Created by weiguangsun on 2016/4/21.
  */
 function Demo() {
+    var $body = $('body');
     this.name = '哈哈哈';
     var tpl = require('../tpl/demo.tpl')({a: '威风威风'});
 	//require('../scss/demo.scss');
@@ -15,4 +16,3 @@ function Demo() {
 	debugger
 };
 new Demo();
-alert(2)
