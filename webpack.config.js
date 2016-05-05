@@ -5,6 +5,7 @@ var fs = require('fs')
 webpack = require('webpack');
 
 module.exports = {
+	// entry: 指定webpack需要编译的文件
 	entry: function () {
 		var entry = {},
 			jsArr = fs.readdirSync('./src/js/'),
@@ -13,6 +14,7 @@ module.exports = {
 			js = jsArr[i];
 			entry[js.replace('.js', '')] = './src/js/' + js;
 		}
+		entry.common = ['./common/js/templateHelpers.js'];
 		console.log(entry);
 		return entry;
 	}(),
@@ -32,18 +34,18 @@ module.exports = {
 	},
 	resolve: {
 		alias: {
-			jquery: __dirname + '/lib/jquery.min.js'
+			jQuery: __dirname + '/lib/jquery.min.js'
 		}
 	},
 	plugins: [
-		// 提供全局的变量，在模块中使用无需用require引入
+		// 提供全局的变量，在模块(entry指定的)中使用无需用require引入，
 		new webpack.ProvidePlugin({
-			jQuery: "jquery",
-			$: "jquery",
+			jQuery: "jQuery",
+			$: "jQuery"
 		}),
 		// 给webpack编译过的js文件加banner
 		new webpack.BannerPlugin('This file is created by swg ' + new Date()),
 		// 将公共代码抽离出来合并为一个文件
-		new webpack.optimize.CommonsChunkPlugin('common.bundle.js'),
+		new webpack.optimize.CommonsChunkPlugin('common', 'common.bundle.js')	// 'templateHelper',
 	]
 };
