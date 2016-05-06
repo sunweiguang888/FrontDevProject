@@ -1,7 +1,6 @@
 /**
  * Created by weiguangsun on 2016/4/21.
  */
-//var templateHelper = require('templateHelper');
 
 function Demo() {
     var $body = $('body');
@@ -16,6 +15,7 @@ function Demo() {
     img.src = png;
     document.body.appendChild(img);*/
 
-	debugger
 };
 new Demo();
+
+module.exports = Demo;

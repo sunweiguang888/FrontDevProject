@@ -96,6 +96,7 @@ gulp.task('compileJs', function () {
 // js文件修改监听
 gulp.task('watchJs', function () {
 	gulp.watch('src/js/*.js', ['compileJs']);
+	gulp.watch('common/js/*.js', ['compileJs']);
 });
 
 // 图片文件编译

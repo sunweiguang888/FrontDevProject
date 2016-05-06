@@ -16,6 +16,5 @@ function Demo() {
     img.src = png;
     document.body.appendChild(img);*/
 
-	debugger
 };
 new Demo();

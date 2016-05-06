@@ -6,9 +6,13 @@ webpack = require('webpack');
 
 module.exports = {
 	resolve: {
+		// 为公共资源指定别名，用的时候直接引用别名即可
 		alias: {
-			jQuery: __dirname + '/lib/jquery.min.js',
-			templateHelpers: __dirname + '/common/js/templateHelpers.js'
+			jQuery: __dirname + '/lib/js/jquery.min.js',
+			templateHelper: __dirname + '/common/js/templateHelper.js',
+			util: __dirname + '/common/js/util.js',
+			sizzle: __dirname + '/lib/js/sizzle.min.js',
+			swg: __dirname + '/common/js/swg.js',
 		}
 	},
 	// entry: 指定webpack需要编译的文件
@@ -20,7 +24,7 @@ module.exports = {
 			js = jsArr[i];
 			entry[js.replace('.js', '')] = './src/js/' + js;
 		}
-		entry.common = ['templateHelpers', 'jQuery'];
+		entry.common = ['templateHelper', 'jQuery', 'util', 'swg', 'sizzle'];
 		console.log(entry);
 		return entry;
 	}(),
