@@ -5,6 +5,12 @@ var fs = require('fs')
 webpack = require('webpack');
 
 module.exports = {
+	resolve: {
+		alias: {
+			jQuery: __dirname + '/lib/jquery.min.js',
+			templateHelpers: __dirname + '/common/js/templateHelpers.js'
+		}
+	},
 	// entry: 指定webpack需要编译的文件
 	entry: function () {
 		var entry = {},
@@ -14,7 +20,7 @@ module.exports = {
 			js = jsArr[i];
 			entry[js.replace('.js', '')] = './src/js/' + js;
 		}
-		entry.common = ['./common/js/templateHelpers.js'];
+		entry.common = ['templateHelpers', 'jQuery'];
 		console.log(entry);
 		return entry;
 	}(),
@@ -32,11 +38,6 @@ module.exports = {
 			//{test: /\.png$/, loader: "url-loader?limit=102400" }	引起gulp-uglify报错，原因不详// require100KB以下的图片将得到base64编码
 		]
 	},
-	resolve: {
-		alias: {
-			jQuery: __dirname + '/lib/jquery.min.js'
-		}
-	},
 	plugins: [
 		// 提供全局的变量，在模块(entry指定的)中使用无需用require引入，
 		new webpack.ProvidePlugin({
@@ -44,7 +45,7 @@ module.exports = {
 			$: "jQuery"
 		}),
 		// 给webpack编译过的js文件加banner
-		new webpack.BannerPlugin('This file is created by swg ' + new Date()),
+		//new webpack.BannerPlugin('This file is created by swg ' + new Date()), 已经通过gulp来加了
 		// 将公共代码抽离出来合并为一个文件
 		new webpack.optimize.CommonsChunkPlugin('common', 'common.bundle.js')	// 'templateHelper',
 	]

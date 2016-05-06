@@ -1,5 +1,7 @@
 /**
+ * gulp配置文件
  * Created by weiguangsun on 2016/4/5.
+ * 由gulpfile.js命名为gulpfile.babel.js，gulp读取配置文件时自动调用babel，前提需要先安装babel-core
  */
 var gulp = require('gulp');
 
@@ -16,7 +18,11 @@ var	uglify = require('gulp-uglify'),		// js压缩混淆
 	replace = require('gulp-replace'),		// 文件清除
 	clean = require('gulp-clean'),	// css压缩
 	runSequence = require('run-sequence'),	// 使gulp任务按顺序执行，因为gulp里任务默认是异步执行的
-	webpack = require('webpack-stream')		//webpack
+	webpack = require('webpack-stream'),		//webpack
+	autoprefixer = require('gulp-autoprefixer'),		// 自动添加css前缀
+	header = require('gulp-header'),		// 自动添加文件头
+	size = require('gulp-size'),		// 显示gulp.dest输出到磁盘上的文件尺寸
+	sourcemaps = require('gulp-sourcemaps')		// 生成sourcemaps
 ;
 
 // ************************************ 文件编译(npm start) ************************************
@@ -41,17 +47,23 @@ gulp.task('clean', function () {
 	return gulp.src('build').pipe(clean()) && gulp.src('deploy').pipe(clean());
 });
 // sass文件编译
-gulp.task('compileSass', function () {
+gulp.task('compileSass', () => {
 	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + new Date());
 	return gulp.src('src/scss/*.scss')		// return这个流是为了保证任务按顺序执行
 		// 开发环境
+		.pipe(sourcemaps.init())	// 放到最开始才能对应原始的scss文件
 		.pipe(sass({outputStyle: 'uncompressed'}))
+		.pipe(autoprefixer())
+		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
+		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
 		.pipe(gulp.dest('build/css'))
+		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(minifyCss())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('deploy/css'))
+		.pipe(size({showFiles: true}))
 	;
 });
 // sass文件修改监听
@@ -66,7 +78,9 @@ gulp.task('compileJs', function () {
 	return gulp.src('build/js')
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
+		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
 		.pipe(gulp.dest('build/js'))
+		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(uglify({
@@ -76,6 +90,7 @@ gulp.task('compileJs', function () {
 		}))
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('deploy/js'))
+		.pipe(size({showFiles: true}))
 	;
 });
 // js文件修改监听
@@ -92,6 +107,8 @@ gulp.task('compileImg', function () {
 		// 正式环境
 		.pipe(imagemin())
 		.pipe(gulp.dest('deploy/images'))
+		.pipe(size({showFiles: true}))
+		.pipe(liveReload())
 	;
 });
 // 图片文件修改监听
@@ -111,6 +128,7 @@ gulp.task('compileHtml', function () {
 		.pipe(replace('.js', '.min.js?v=' + Date.now()))
 		.pipe(minifyHtml())
 		.pipe(gulp.dest('deploy'))
+		.pipe(size({showFiles: true}))
 	;
 });
 // html文件修改监听
