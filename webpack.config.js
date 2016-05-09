@@ -9,10 +9,10 @@ module.exports = {
 		// 为公共资源指定别名，用的时候直接引用别名即可
 		alias: {
 			jQuery: __dirname + '/lib/js/jquery.min.js',
-			templateHelper: __dirname + '/common/js/templateHelper.js',
-			util: __dirname + '/common/js/util.js',
 			sizzle: __dirname + '/lib/js/sizzle.min.js',
-			swg: __dirname + '/common/js/swg.js',
+			templateHelper: __dirname + '/src/common/js/templateHelper.js',
+			util: __dirname + '/src/common/js/util.js',
+			swg: __dirname + '/src/common/js/swg.js'
 		}
 	},
 	// entry: 指定webpack需要编译的文件

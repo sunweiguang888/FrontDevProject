@@ -102,19 +102,19 @@ gulp.task('watchJs', function () {
 // 图片文件编译
 gulp.task('compileImg', function () {
 	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + new Date());
-	return gulp.src('src/images/**/*.*')
+	return gulp.src('src/img/**/*.*')
 		// 开发环境
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(imagemin())
-		.pipe(gulp.dest('deploy/images'))
+		.pipe(gulp.dest('deploy/img'))
 		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 	;
 });
 // 图片文件修改监听
 gulp.task('watchImg', function () {
-	gulp.watch('src/images/**/*.*', ['compileImg']);
+	gulp.watch('src/img/**/*.*', ['compileImg']);
 });
 
 // html文件编译
