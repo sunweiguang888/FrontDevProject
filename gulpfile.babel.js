@@ -44,7 +44,7 @@ gulp.task('default', [], function () {
 });
 // sass目录清理
 gulp.task('clean', function () {
-	return gulp.src('.build').pipe(clean()) && gulp.src('dist').pipe(clean());
+	return gulp.src('src/.temp').pipe(clean()) && gulp.src('dist').pipe(clean());
 });
 // sass文件编译
 gulp.task('compileSass', () => {
@@ -56,7 +56,7 @@ gulp.task('compileSass', () => {
 		.pipe(autoprefixer())
 		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('.build/css'))
+		.pipe(gulp.dest('src/.temp/css'))
 		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 		// 正式环境
@@ -75,11 +75,11 @@ gulp.task('watchSass', function () {
 // js文件编译（webpack）
 gulp.task('compileJs', function () {
 	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + new Date());
-	return gulp.src('.build/js')
+	return gulp.src('src/.temp/js')
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('.build/js'))
+		.pipe(gulp.dest('src/.temp/js'))
 		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 		// 正式环境
@@ -124,7 +124,7 @@ gulp.task('compileHtml', function () {
 		// 开发环境
 		.pipe(liveReload())
 		// 正式环境
-		.pipe(replace('../.build/', './'))
+		.pipe(replace('.temp/', './'))
 		.pipe(replace('.css', '.min.css?v=' + Date.now()))
 		.pipe(replace('.js', '.min.js?v=' + Date.now()))
 		.pipe(minifyHtml())
