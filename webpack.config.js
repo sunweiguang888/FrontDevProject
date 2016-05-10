@@ -29,7 +29,7 @@ module.exports = {
 		return entry;
 	}(),
 	output: {
-		path: __dirname + '/build/js',	//__dirname 是当前模块文件所在目录的完整绝对路径
+		path: __dirname + '/.build/js',	//__dirname 是当前模块文件所在目录的完整绝对路径
 		//publicPath: '../../js/',		//网站运行时的访问路径 未知
 		filename: "[name].js"
 	},

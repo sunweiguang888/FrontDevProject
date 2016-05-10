@@ -44,7 +44,7 @@ gulp.task('default', [], function () {
 });
 // sass目录清理
 gulp.task('clean', function () {
-	return gulp.src('build').pipe(clean()) && gulp.src('deploy').pipe(clean());
+	return gulp.src('.build').pipe(clean()) && gulp.src('dist').pipe(clean());
 });
 // sass文件编译
 gulp.task('compileSass', () => {
@@ -56,13 +56,13 @@ gulp.task('compileSass', () => {
 		.pipe(autoprefixer())
 		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('build/css'))
+		.pipe(gulp.dest('.build/css'))
 		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(minifyCss())
 		.pipe(rename({suffix: '.min'}))
-		.pipe(gulp.dest('deploy/css'))
+		.pipe(gulp.dest('dist/css'))
 		.pipe(size({showFiles: true}))
 	;
 });
@@ -75,11 +75,11 @@ gulp.task('watchSass', function () {
 // js文件编译（webpack）
 gulp.task('compileJs', function () {
 	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + new Date());
-	return gulp.src('build/js')
+	return gulp.src('.build/js')
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('build/js'))
+		.pipe(gulp.dest('.build/js'))
 		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 		// 正式环境
@@ -89,7 +89,7 @@ gulp.task('compileJs', function () {
 			preserveComments: 'none'  // all保留所有注释
 		}))
 		.pipe(rename({suffix: '.min'}))
-		.pipe(gulp.dest('deploy/js'))
+		.pipe(gulp.dest('dist/js'))
 		.pipe(size({showFiles: true}))
 	;
 });
@@ -107,7 +107,7 @@ gulp.task('compileImg', function () {
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(imagemin())
-		.pipe(gulp.dest('deploy/img'))
+		.pipe(gulp.dest('dist/img'))
 		.pipe(size({showFiles: true}))
 		.pipe(liveReload())
 	;
@@ -124,11 +124,11 @@ gulp.task('compileHtml', function () {
 		// 开发环境
 		.pipe(liveReload())
 		// 正式环境
-		.pipe(replace('../build/', './'))
+		.pipe(replace('../.build/', './'))
 		.pipe(replace('.css', '.min.css?v=' + Date.now()))
 		.pipe(replace('.js', '.min.js?v=' + Date.now()))
 		.pipe(minifyHtml())
-		.pipe(gulp.dest('deploy'))
+		.pipe(gulp.dest('dist'))
 		.pipe(size({showFiles: true}))
 	;
 });
