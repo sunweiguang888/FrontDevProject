@@ -1,33 +1,34 @@
 /**
  * gulp配置文件
  * Created by weiguangsun on 2016/4/5.
- * 由gulpfile.js命名为gulpfile.babel.js，gulp读取配置文件时自动调用babel，前提需要先安装babel-core
+ * 由gulpfile.js命名为gulpfile.babel.js，gulp读取配置文件时自动调用babel，
+ * 前提需要先安装babel-core、babel-preset-es2015、babel-preset-stage-0
  */
-var gulp = require('gulp');
 
 // 引入组件
-var	uglify = require('gulp-uglify'),		// js压缩混淆
-	//$ = require('gulp-load-plugins')(),		//插件加载器，启动加载devDependencies中所有插件
-	rename = require('gulp-rename'),		// 文件重命名
-	sass = require('gulp-sass'),			// sass预编译
-	concat = require('gulp-concat'),			// 文件合并 .pipe(concat('all.js'))
-	minifyHtml = require('gulp-minify-html'),		// html压缩
-	imagemin = require('gulp-imagemin'),		// 图片压缩
-	liveReload = require('gulp-livereload'),		// 文件变化时自动刷新浏览器，chrome需要安装LiveReload插件
-	minifyCss = require('gulp-minify-css'),		// css压缩
-	replace = require('gulp-replace'),		// 文件清除
-	clean = require('gulp-clean'),	// css压缩
-	runSequence = require('run-sequence'),	// 使gulp任务按顺序执行，因为gulp里任务默认是异步执行的
-	webpack = require('webpack-stream'),		//webpack
-	autoprefixer = require('gulp-autoprefixer'),		// 自动添加css前缀
-	header = require('gulp-header'),		// 自动添加文件头
-	size = require('gulp-size'),		// 显示gulp.dest输出到磁盘上的文件尺寸
-	sourcemaps = require('gulp-sourcemaps')		// 生成sourcemaps
-;
+import gulp from 'gulp';
+//$ = require('gulp-load-plugins')(),		//插件加载器，启动加载devDependencies中所有插件
+import	uglify from 'gulp-uglify';		// js压缩混淆
+import	rename from 'gulp-rename';		// 文件重命名
+import	sass from 'gulp-sass';			// sass预编译
+import	concat from 'gulp-concat';			// 文件合并 .pipe(concat('all.js'
+import	minifyHtml from 'gulp-minify-html';		// html压缩
+import imagemin from 'gulp-imagemin';		// 图片压缩
+import	liveReload from 'gulp-livereload';		// 文件变化时自动刷新浏览器，chrome需要安装LiveReload插件
+import	minifyCss from 'gulp-minify-css';		// css压缩
+import	replace from 'gulp-replace';		// 文件清除
+import	clean from 'gulp-clean';	// css压缩
+import	runSequence from 'run-sequence';	// 使gulp任务按顺序执行，因为gulp里任务默认是异步执行的
+import 	webpack from 'webpack-stream';		//webpack
+import	autoprefixer from 'gulp-autoprefixer';		// 自动添加css前缀
+import	header from 'gulp-header';		// 自动添加文件头
+import	size from 'gulp-size';		// 显示gulp.dest输出到磁盘上的文件尺寸
+import	sourcemaps from 'gulp-sourcemaps';		// 生成sourcemaps
+
 
 // ************************************ 文件编译(npm start) ************************************
 // 任务入口
-gulp.task('default', [], function () {
+gulp.task('default', [], () => {
 	runSequence('clean',
 		'compileSass',
 		'watchSass',
@@ -43,9 +44,7 @@ gulp.task('default', [], function () {
 	);
 });
 // sass目录清理
-gulp.task('clean', function () {
-	return gulp.src('src/.temp').pipe(clean()) && gulp.src('dist').pipe(clean());
-});
+gulp.task('clean', () => gulp.src('src/.temp').pipe(clean()) && gulp.src('dist').pipe(clean()));
 // sass文件编译
 gulp.task('compileSass', () => {
 	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + new Date());
@@ -67,13 +66,13 @@ gulp.task('compileSass', () => {
 	;
 });
 // sass文件修改监听
-gulp.task('watchSass', function () {
+gulp.task('watchSass', () => {
 	liveReload.listen();	//开启liveReload
 	gulp.watch('src/scss/*.scss', ['compileSass']);
 });
 
 // js文件编译（webpack）
-gulp.task('compileJs', function () {
+gulp.task('compileJs', () => {
 	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + new Date());
 	return gulp.src('src/.temp/js')
 		// 开发环境
@@ -94,13 +93,13 @@ gulp.task('compileJs', function () {
 	;
 });
 // js文件修改监听
-gulp.task('watchJs', function () {
+gulp.task('watchJs', () => {
 	gulp.watch('src/js/*.js', ['compileJs']);
 	gulp.watch('common/js/*.js', ['compileJs']);
 });
 
 // 图片文件编译
-gulp.task('compileImg', function () {
+gulp.task('compileImg', () => {
 	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + new Date());
 	return gulp.src('src/img/**/*.*')
 		// 开发环境
@@ -113,12 +112,10 @@ gulp.task('compileImg', function () {
 	;
 });
 // 图片文件修改监听
-gulp.task('watchImg', function () {
-	gulp.watch('src/img/**/*.*', ['compileImg']);
-});
+gulp.task('watchImg', () => gulp.watch('src/img/**/*.*', ['compileImg']));
 
 // html文件编译
-gulp.task('compileHtml', function () {
+gulp.task('compileHtml', () => {
 	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + new Date());
 	return gulp.src('src/*.html')
 		// 开发环境
@@ -133,6 +130,4 @@ gulp.task('compileHtml', function () {
 	;
 });
 // html文件修改监听
-gulp.task('watchHtml', function () {
-	gulp.watch('src/*.html', ['compileHtml']);
-});
+gulp.task('watchHtml', () => gulp.watch('src/*.html', ['compileHtml']));

@@ -1,8 +1,8 @@
 /**
  * Created by weiguangsun on 2016/4/20.
  */
-var fs = require('fs')
-webpack = require('webpack');
+var fs = require('fs'),
+	webpack = require('webpack');
 
 module.exports = {
 	resolve: {
