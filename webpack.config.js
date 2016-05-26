@@ -1,10 +1,14 @@
 /**
  * Created by weiguangsun on 2016/4/20.
  */
-var fs = require('fs'),
-	webpack = require('webpack');
+import fs from 'fs';
+import webpack from 'webpack';
 
-module.exports = {
+a = 3444;
+//Object.freeze(a);
+console.log(global.a+"fffffffffffffffffffffffffffff")
+
+export default {
 	resolve: {
 		// 为公共资源指定别名，用的时候直接引用别名即可
 		alias: {

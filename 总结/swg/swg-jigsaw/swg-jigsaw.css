@@ -1,0 +1,4 @@
+@charset "UTF-8";
+/*拼图*/
+ul.swg-jigsaw{list-style: none;display: inline-block;}
+ul.swg-jigsaw > li{display: inline-block;float: left;}

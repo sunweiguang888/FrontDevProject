@@ -1,0 +1,17 @@
+@charset "UTF-8";
+/*图片懒加载*/
+img[data-src]{background: url("http://i3.17173.itc.cn/2013/mobileme/ipic.v/pic/cms/2014/08/13/loading2014081302.gif") no-repeat center;}
+/*盒阴影*/
+.f-boxShadow{width: 100%;height: 100%;background-color: #e5e5e5;position: absolute;top: 6px;left: 6px;/*+width: 488px;+height: 193px;width: 488px\0;height: 193px\0;*/z-index: -1;}
+/*方形边框效果*/
+.f-imgFrameEffect{border: .2rem solid white;border-radius: .1rem;box-shadow: #d1d0d0 0 0 .4rem;}
+/*圆形边框效果*/
+.f-circleFrameEffect{border: 4px solid white;box-shadow: 0 0 .5rem #a7a7a7;border-radius: 100rem;width: 30px;height: 30px;background-size: cover;background-repeat: no-repeat;}
+/*切字效果*/
+.f-cutWord{white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+/*半透明效果(目标元素添加class“<div class="f-halfTransparent"></div>”，目标元素内添加标签“<div class="f-halfTransparentChild"></div>”)*/
+.f-halfTransparent{position: relative;z-index: 0;}
+.f-halfTransparentChild{width: 100%;height: 100%;background: black;position: absolute;top: 0;left: 0;z-index: -1;filter: alpha(opacity=20);/*IE 7 8*/opacity: 0.2;}
+/*上方半透明效果(目标元素添加class“<div class="f-halfTransparentTop"></div>”，目标元素内添加标签“<div class="f-halfTransparentTopChild"></div>”)*/
+.f-halfTransparentTop{position: relative;z-index: 1;}
+.f-halfTransparentTopChild{width: 100%;height: 100%;background: black;position: absolute;top: 0;left: 0;z-index: 0;filter: alpha(opacity=20);/*IE 7 8*/opacity: 0.2;}

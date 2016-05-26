@@ -1,0 +1,10 @@
+@charset "UTF-8";
+/*焦点图*/
+.swg-focusPic{overflow: hidden;position: relative;font-size: 0;}
+.swg-focusPic *{margin: 0;padding: 0;}
+.swg-focusPic > ul{display: inline-block;/*撑开*/white-space: nowrap;}
+.swg-focusPic > ul > li{display: inline-block;width: 100%;}
+.swg-focusPic > ul > li > a{display: block;font-size: 0;}
+.swg-focusPic > ul > li > a > img{width: 100%;}
+.swg-focusPic > .lights{position: absolute;bottom: 25px;right: 15px;}
+.swg-focusPic > .lights > img{width: 30px;margin: 0 5px;}
