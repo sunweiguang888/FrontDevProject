@@ -1,0 +1,81 @@
+ html5的标准还没有最终确定，但关于视频播放器的标准基本上被卡住了。mazilla和Opera由于没有H264的版权，坚持不支持H264标准的mp4格式视频，只支持ogg和webm两种格式，其中webm是谷歌去年提供的一个新的标准，并将该格式开源；ogg似乎是早期的一种手机视频的格式，这个了解不多。但也许mp4视频效果比较好，现在应用比较广。而IE9、safari、chrome三大厂商不担心版权问题，都提供了对H264的支持。所以当前兼容所有支持html5的视频播放方案差不错都是这样：
+对同一视频提供三种格式，即mp4、webm、ogg，但其实仔细想想，只需要提供两种：mp4和webm，就可以了。
+videojs就提供了这样一套解决方案，他是一个兼容html5的视频播放工具，早期版本兼容所有浏览器，方法是：提供三个后缀名的视频，并在不支持html5的浏览器下生成一个flash的版本。
+
+最新的3.1.0版本优化了之前的做法，只需要提供两个格式的视频，页面制作起来更加方便，只有两步走：
+1、引用脚本，videojs很为你着想，直接cdn了，你都不需要下载这些代码放入自己的网站
+<link href=”http://vjs.zencdn.net/c/video-js.css” rel=”stylesheet”>
+<script src=”http://vjs.zencdn.net/c/video.js”></script>
+2、页面中加入一个html5的video标签，要这么加：
+<video id=”my_video_1″ class=”video-js vjs-default-skin” controls preload=”auto” width=”640″ height=”264″ poster=”my_video_poster.png” data-setup=”{}”>
+<source src=”my_video.mp4″ type=’video/mp4′>
+<source src=”my_video.webm” type=’video/webm’>
+</video>
+其中post就是视频的缩略图，那俩source一个指向mp4视频，一个指向webm视频，在页面加载过程中，video.js会判断浏览器支持哪个格式视频，会自动加载可播放的视频。
+简单吧！
+
+进阶：使用api
+
+获取对象：
+var myPlayer = _V_(“my_video_1″);
+后面那个就是就是video标签的id值，这是myPlayer就是播放器对象了。
+
+播放：
+myPlayer.play();
+暂停：
+myPlayer.pause();
+获取播放进度：
+var whereYouAt = myPlayer.currentTime();
+设置播放进度：
+myPlayer.currentTime(120);
+视频持续时间，加载完成视频才可以知道视频时长，且在flash情况下无效
+var howLongIsThis = myPlayer.duration();
+缓冲，就是返回下载了多少
+var whatHasBeenBuffered = myPlayer.buffered();
+百分比的缓冲
+var howMuchIsDownloaded = myPlayer.bufferedPercent();
+声音大小（0-1之间）
+var howLoudIsIt = myPlayer.volume();
+设置声音大小
+myPlayer.volume(0.5);
+
+取得视频的宽度
+var howWideIsIt = myPlayer.width();
+
+设置宽度：
+myPlayer.width(640);
+获取高度
+var howTallIsIt = myPlayer.height();
+设置高度：
+myPlayer.height(480);
+一步到位的设置大小：
+myPlayer.size(640,480);
+
+全屏
+myPlayer.enterFullScreen();
+离开全屏
+myPlayer.enterFullScreen();
+
+添加事件
+var myFunc = function(){
+// Do something when the event is fired
+};
+myPlayer.addEvent(“eventName”, myFunc);
+删除事件
+myPlayer.removeEvent(“eventName”, myFunc);
+
+所有事件列表：
+
+NameDescriptionloadstart开始加载play播放.pause暂停.timeupdateFired when the current playback position has changed. During playback this is fired every 15-250 milliseconds, depnding on the playback technology in use.就是时间变化吧，与具体的播放技术有关，不同浏览器及格式不同。ended播放结束durationchangeFired when the duration of the media resource is changed, or known for the first time.下载进度变化吧。progress进度变化.resize大小修改.volumechange音量变化.error出错.
+      虽然文章说明在不支持html5的情况下，会以flash播放，但在支持html5的firefox下播放mp4时，却遇到很大的困难，虽然调用了flash，但一直无法播放（不过我也一直怀疑我的firefox下的flash有问题，不知道是不是真的）。不过如果你听从videojs的建议，放两个格式的视频，就不会有这个问题了。
+最后，这么好使的脚本，是免费的么？
+经查，该脚本遵循LGPLv3协议，听着协议又头大了？这里讲个常识：
+如果你的项目中要使用开源的代码，而你的项目又不开源，可选的开源协议有：BSD、MIT、LGPL、Apache Licence 2.0。其中前两种甚至可以修改源代码，但一定要标注版权；后两种可以随便用，但是不要随便改，呵呵。所以你要使用这个脚本的话，是完全可以的，api也这么全，至于css，并不受版权保护，你可以根据需要改变为你要的样式即可。
+
+关于开源协议，如果有朋友有兴趣，可以留言讨论，我将来会单独写一篇关于开源协议使用分析的文章。
+
+另：附件中提供了3.1.0版本和2.0.2版本，我们并没有将2.0.2版本的用法，但压缩包里面有demo，使用的时候要调用下：VideoJS.setupAllWhenReady();
+
+另外video的写法中还有专门针对flash的写法，当然你也可以用这个插件实现纯粹的flash播放（只写flash那部分就好，可以保证统一的浏览效果，不过ios的浏览器不兼容flash，这就要你自己进行判断来处理
+
+转载请注明（B5教程网）原文链接：http://www.bcty365.com/content-47-604-1.html

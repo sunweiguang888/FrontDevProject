@@ -1,0 +1,9 @@
+@charset "UTF-8";
+/*手指触摸滑动图片*/
+.swg-touchScrollPic{overflow: hidden;/*超出隐藏*/}
+.swg-touchScrollPic > ul{display: inline-block;/*撑开*/white-space: nowrap;/*内容不换行*/font-size: 0;/*去空白*/padding: 0 5px;}
+.swg-touchScrollPic > ul > li{display: inline-block;font-size: 16px;/*回复正常字体*/margin: 0 5px;}
+.swg-touchScrollPic > ul > li > a{}
+.swg-touchScrollPic > ul > li > a > .pic{}
+.swg-touchScrollPic > ul > li > a > .pic > img{}
+.swg-touchScrollPic > ul > li > a > .word{font-size: 16px;text-align: center;}
