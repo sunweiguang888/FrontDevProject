@@ -1,7 +1,7 @@
 /**
  * Created by weiguangsun on 2016/4/21.
  */
-
+debugger
 function Demo() {
     var $body = $('body');
     this.name = '哈哈哈';

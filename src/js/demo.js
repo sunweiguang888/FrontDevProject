@@ -20,5 +20,5 @@ function Demo() {
     document.body.appendChild(img);*/
 
 	debugger
-};
+}
 new Demo();

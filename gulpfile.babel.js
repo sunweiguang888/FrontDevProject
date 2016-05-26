@@ -26,6 +26,7 @@ import	size from 'gulp-size';		// 显示gulp.dest输出到磁盘上的文件尺�
 import	sourcemaps from 'gulp-sourcemaps';		// 生成sourcemaps
 
 
+
 // ************************************ 文件编译(npm start) ************************************
 // 任务入口
 gulp.task('default', [], () => {
