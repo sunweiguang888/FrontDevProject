@@ -1,0 +1,19 @@
+{
+	"name": "chrome_extension",
+	"version": "1.0",
+	"manifest_version": 2,
+	"description": "网页打开时localhost重定向为局域网环境",
+	"background": { "scripts": ["background.js"] },
+	"browser_action": {
+		//"default_icon": "icon.png",
+		"default_popup": "popup.html"
+	},
+	"permissions": [
+		"http://api.flickr.com/",
+		"tabs"
+	],
+	"content_scripts": [{
+		"matches":["http://localhost/*"],
+		"js":["content_script.js"]
+	}]
+}
