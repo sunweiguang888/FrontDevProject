@@ -1597,7 +1597,7 @@
 			return array;
 		},
 		/**
-		 * base64编码
+		 * base64编码（不支持中文）
 		 * @param {Object} str
 		 */
 		base64EncodeChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
@@ -1633,7 +1633,7 @@
 			return out;
 		},
 		/**
-		 * base64解码
+		 * base64解码（不支持中文）
 		 * @param {Object} str
 		 */
 		base64decode: function(str){
