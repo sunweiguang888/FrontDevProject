@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+$containerMaxWidth: 640px;
+
+*{margin: 0;padding: 0;}
+body{font-family: "微软雅黑", Arial, Helvetica, sans-serif;font-size: 18px;line-height: 1.5;}
+ul{list-style-position: inside;}
+a{text-decoration: none;color: inherit;}
+img{border-style: none;max-width: 100%;max-height: 100%;}
+iframe{border: none;}
+
+.g-container{max-width: $containerMaxWidth;}
+@media screen and (min-width: $containerMaxWidth) {
+  .g-container{border: 1px solid #ddd;margin: 0 auto;box-sizing: border-box;}
+}
+
+

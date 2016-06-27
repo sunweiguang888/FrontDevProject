@@ -1,11 +1,1 @@
-body:before{content: "333333333";}
-body:before{content: "哈哈哈wefwef";}
-body:before{content: "哈哈哈wefwef";}body:before{content: "哈哈哈wefwef";}
-body:before{content: "88888";}
-body{}
-div{font-size: 20px; }
-div{
-  display: flex;
-  flex: 1;
-}
-
+@import './common/reset.scss';
