@@ -45,19 +45,18 @@ gulp.task('default', [], () => {
 	);
 });
 // sass目录清理
-gulp.task('clean', () => gulp.src('src/.temp').pipe(clean()) && gulp.src('dist').pipe(clean()));
+gulp.task('clean', () => gulp.src('dev').pipe(clean()) && gulp.src('dist').pipe(clean()));
 // sass文件编译
 gulp.task('compileSass', () => {
 	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + new Date());
-	return gulp.src('src/scss/*.scss')		// return这个流是为了保证任务按顺序执行
+	return gulp.src('src/scss/**/*.scss')		// return这个流是为了保证任务按顺序执行
 		// 开发环境
 		.pipe(sourcemaps.init())	// 放到最开始才能对应原始的scss文件
 		.pipe(sass({outputStyle: 'uncompressed'}))
 		.pipe(autoprefixer())
 		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('src/.temp/css'))
-		.pipe(size({showFiles: true}))
+		.pipe(gulp.dest('dev/css'))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(minifyCss())
@@ -69,18 +68,17 @@ gulp.task('compileSass', () => {
 // sass文件修改监听
 gulp.task('watchSass', () => {
 	liveReload.listen();	//开启liveReload
-	gulp.watch('src/scss/*.scss', ['compileSass']);
+	gulp.watch('src/scss/**/*.scss', ['compileSass']);
 });
 
 // js文件编译（webpack）
 gulp.task('compileJs', () => {
 	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + new Date());
-	return gulp.src('src/.temp/js')
+	return gulp.src('123')
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('src/.temp/js'))
-		.pipe(size({showFiles: true}))
+		.pipe(gulp.dest('dev/js'))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(uglify({
@@ -105,11 +103,12 @@ gulp.task('compileImg', () => {
 	return gulp.src('src/img/**/*.*')
 		// 开发环境
 		.pipe(liveReload())
+		.pipe(gulp.dest('dev/img'))
+		.pipe(liveReload())
 		// 正式环境
 		.pipe(imagemin())
 		.pipe(gulp.dest('dist/img'))
 		.pipe(size({showFiles: true}))
-		.pipe(liveReload())
 	;
 });
 // 图片文件修改监听
@@ -120,9 +119,9 @@ gulp.task('compileHtml', () => {
 	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + new Date());
 	return gulp.src('src/*.html')
 		// 开发环境
+		.pipe(gulp.dest('dev'))
 		.pipe(liveReload())
 		// 正式环境
-		.pipe(replace('.temp/', './'))
 		.pipe(replace('.css', '.min.css?v=' + Date.now()))
 		.pipe(replace('.js', '.min.js?v=' + Date.now()))
 		.pipe(minifyHtml())

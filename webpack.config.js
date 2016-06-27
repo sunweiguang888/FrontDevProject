@@ -4,7 +4,8 @@
 import fs from 'fs';
 import webpack from 'webpack';
 
-export default {
+//export default {		// 有bug 原因不明
+module.exports = {
 	resolve: {
 		// 为公共资源指定别名，用的时候直接引用别名即可
 		alias: {
@@ -29,7 +30,7 @@ export default {
 		return entry;
 	}(),
 	output: {
-		path: __dirname + '/.build/js',	//__dirname 是当前模块文件所在目录的完整绝对路径
+		//path: __dirname + '/.build/js',	//__dirname 是当前模块文件所在目录的完整绝对路径
 		//publicPath: '../../js/',		//网站运行时的访问路径 未知
 		filename: "[name].js"
 	},
