@@ -3,6 +3,9 @@
  */
 import fs from 'fs';
 import webpack from 'webpack';
+import path from 'path';
+import glob from 'glob';
+
 
 //export default {		// 有bug 原因不明
 module.exports = {
@@ -17,10 +20,11 @@ module.exports = {
 		}
 	},
 	// entry: 指定webpack需要编译的文件
-	entry: function () {
+	/*entry: function () {
 		var entry = {},
-			jsArr = fs.readdirSync('./src/js/'),
+			jsArr = fs.readdirSync('./src/module/!*!/js'),
 			js;
+		console.log(jsArr)
 		for (var i in jsArr) {
 			js = jsArr[i];
 			entry[js.replace('.js', '')] = './src/js/' + js;
@@ -28,7 +32,29 @@ module.exports = {
 		entry.common = ['templateHelper', 'jQuery', 'util', 'swg', 'sizzle'];
 		console.log(entry);
 		return entry;
-	}(),
+	}(),*/
+	/*entry: function entries(globPath) {
+		var files = glob.sync(globPath);
+		var entries = {}, entry, dirname, basename;
+		for (var i = 0; i < files.length; i++) {
+			entry = files[i];
+			dirname = path.dirname(entry);
+			basename = path.basename(entry, '.js');
+			entries[path.join(dirname, basename)] = './' + entry;
+		}
+		console.log(entries);
+		return entries;
+	}('src/module/!*!/js/!*.js'),*/
+	entry: function entries(globPath) {
+		var files = glob.sync(globPath);
+		var entries = {}, entry, dirname, basename;
+		for (var i = 0; i < files.length; i++) {
+			var filePath = './' + files[i];
+			entries[filePath] = filePath;
+		}
+		console.log(entries);
+		return entries;
+	}('src/module/*/js/*.js'),
 	output: {
 		//path: __dirname + '/.build/js',	//__dirname 是当前模块文件所在目录的完整绝对路径
 		//publicPath: '../../js/',		//网站运行时的访问路径 未知

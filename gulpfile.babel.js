@@ -26,6 +26,13 @@ import	size from 'gulp-size';		// 显示gulp.dest输出到磁盘上的文件尺�
 import	sourcemaps from 'gulp-sourcemaps';		// 生成sourcemaps
 
 
+const Path = {
+	scss: 'src/**/*.scss',
+	js: '',
+	img: ['src/**/*.png', 'src/**/*.jpg', 'src/**/*.gif'],
+	html: 'src/**/*.html',
+};
+
 
 // ************************************ 文件编译(npm start) ************************************
 // 任务入口
@@ -49,26 +56,26 @@ gulp.task('clean', () => gulp.src('dev').pipe(clean()) && gulp.src('dist').pipe(
 // sass文件编译
 gulp.task('compileSass', () => {
 	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + new Date());
-	return gulp.src('src/scss/**/*.scss')		// return这个流是为了保证任务按顺序执行
+	return gulp.src(Path.scss)		// return这个流是为了保证任务按顺序执行
 		// 开发环境
 		.pipe(sourcemaps.init())	// 放到最开始才能对应原始的scss文件
 		.pipe(sass({outputStyle: 'uncompressed'}))
 		.pipe(autoprefixer())
 		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('dev/css'))
+		.pipe(gulp.dest('dev/'))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(minifyCss())
 		.pipe(rename({suffix: '.min'}))
-		.pipe(gulp.dest('dist/css'))
+		.pipe(gulp.dest('dist/'))
 		.pipe(size({showFiles: true}))
 	;
 });
 // sass文件修改监听
 gulp.task('watchSass', () => {
 	liveReload.listen();	//开启liveReload
-	gulp.watch('src/scss/**/*.scss', ['compileSass']);
+	gulp.watch(Path.scss, ['compileSass']);
 });
 
 // js文件编译（webpack）
@@ -100,24 +107,24 @@ gulp.task('watchJs', () => {
 // 图片文件编译
 gulp.task('compileImg', () => {
 	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + new Date());
-	return gulp.src('src/img/**/*.*')
+	return gulp.src(Path.img)
 		// 开发环境
 		.pipe(liveReload())
-		.pipe(gulp.dest('dev/img'))
+		.pipe(gulp.dest('dev/'))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(imagemin())
-		.pipe(gulp.dest('dist/img'))
+		.pipe(gulp.dest('dist/'))
 		.pipe(size({showFiles: true}))
 	;
 });
 // 图片文件修改监听
-gulp.task('watchImg', () => gulp.watch('src/img/**/*.*', ['compileImg']));
+gulp.task('watchImg', () => gulp.watch(Path.img, ['compileImg']));
 
 // html文件编译
 gulp.task('compileHtml', () => {
 	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + new Date());
-	return gulp.src('src/*.html')
+	return gulp.src(Path.html)
 		// 开发环境
 		.pipe(gulp.dest('dev'))
 		.pipe(liveReload())
@@ -130,4 +137,4 @@ gulp.task('compileHtml', () => {
 	;
 });
 // html文件修改监听
-gulp.task('watchHtml', () => gulp.watch('src/*.html', ['compileHtml']));
+gulp.task('watchHtml', () => gulp.watch(Path.html, ['compileHtml']));
