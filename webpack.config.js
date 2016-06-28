@@ -47,13 +47,14 @@ module.exports = {
 	}('src/module/!*!/js/!*.js'),*/
 	entry: function entries(globPath) {
 		var files = glob.sync(globPath);
-		var entries = {}, entry, dirname, basename;
+		var entry = {}, filePath;
 		for (var i = 0; i < files.length; i++) {
-			var filePath = './' + files[i];
-			entries[filePath] = filePath;
+			filePath = './' + files[i];
+			entry[filePath] = filePath;
 		}
-		console.log(entries);
-		return entries;
+		entry.common = ['templateHelper', 'jQuery', 'util', 'swg', 'sizzle'];
+		console.log(entry);
+		return entry;
 	}('src/module/*/js/*.js'),
 	output: {
 		//path: __dirname + '/.build/js',	//__dirname 是当前模块文件所在目录的完整绝对路径

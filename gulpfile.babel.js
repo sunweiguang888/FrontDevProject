@@ -28,7 +28,7 @@ import	sourcemaps from 'gulp-sourcemaps';		// 生成sourcemaps
 
 const Path = {
 	scss: 'src/**/*.scss',
-	js: '',
+	js: 'src/**/*.js',
 	img: ['src/**/*.png', 'src/**/*.jpg', 'src/**/*.gif'],
 	html: 'src/**/*.html',
 };
@@ -100,8 +100,8 @@ gulp.task('compileJs', () => {
 });
 // js文件修改监听
 gulp.task('watchJs', () => {
-	gulp.watch('src/js/*.js', ['compileJs']);
-	gulp.watch('common/js/*.js', ['compileJs']);
+	gulp.watch(['src/module/*/js/*.js', 'src/common/js/*.js'], ['compileJs']);
+	gulp.watch(['compileJs']);
 });
 
 // 图片文件编译
