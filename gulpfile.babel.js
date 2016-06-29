@@ -24,13 +24,23 @@ import	autoprefixer from 'gulp-autoprefixer';		// 自动添加css前缀
 import	header from 'gulp-header';		// 自动添加文件头
 import	size from 'gulp-size';		// 显示gulp.dest输出到磁盘上的文件尺寸
 import	sourcemaps from 'gulp-sourcemaps';		// 生成sourcemaps
-
+import	fs from 'fs';		// 文件操作模块
+import	moment from 'moment';		// 时间格式化
 
 const Path = {
-	scss: 'src/**/*.scss',
-	js: 'src/**/*.js',
-	img: ['src/**/*.png', 'src/**/*.jpg', 'src/**/*.gif'],
-	html: 'src/**/*.html',
+    src: {
+        root: 'src',
+        css: 'src/**/*.scss',
+        js: ['src/module/*/js/*.js', 'src/common/js/*.js'],
+        img: [
+            'src/**/*.png',
+            'src/**/*.jpg',
+            'src/**/*.gif'
+        ],
+        html: 'src/**/*.html',
+    },
+    devRoot: 'dev',
+	distRoot: 'dist',
 };
 
 
@@ -52,30 +62,30 @@ gulp.task('default', [], () => {
 	);
 });
 // sass目录清理
-gulp.task('clean', () => gulp.src('dev').pipe(clean()) && gulp.src('dist').pipe(clean()));
+gulp.task('clean', () => gulp.src(Path.devRoot).pipe(clean()) && gulp.src('dist').pipe(clean()));
 // sass文件编译
 gulp.task('compileSass', () => {
 	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + new Date());
-	return gulp.src(Path.scss)		// return这个流是为了保证任务按顺序执行
+	return gulp.src(Path.src.css)		// return这个流是为了保证任务按顺序执行
 		// 开发环境
 		.pipe(sourcemaps.init())	// 放到最开始才能对应原始的scss文件
 		.pipe(sass({outputStyle: 'uncompressed'}))
 		.pipe(autoprefixer())
 		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
-		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('dev/'))
+		//.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
+		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(minifyCss())
 		.pipe(rename({suffix: '.min'}))
-		.pipe(gulp.dest('dist/'))
+		.pipe(gulp.dest(Path.distRoot))
 		.pipe(size({showFiles: true}))
 	;
 });
 // sass文件修改监听
 gulp.task('watchSass', () => {
 	liveReload.listen();	//开启liveReload
-	gulp.watch(Path.scss, ['compileSass']);
+	gulp.watch(Path.src.css, ['compileSass']);
 });
 
 // js文件编译（webpack）
@@ -85,7 +95,7 @@ gulp.task('compileJs', () => {
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('dev/'))
+		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(uglify({
@@ -100,41 +110,43 @@ gulp.task('compileJs', () => {
 });
 // js文件修改监听
 gulp.task('watchJs', () => {
-	gulp.watch(['src/module/*/js/*.js', 'src/common/js/*.js'], ['compileJs']);
-	gulp.watch(['compileJs']);
+	gulp.watch(Path.src.js, ['compileJs']);
 });
 
 // 图片文件编译
 gulp.task('compileImg', () => {
 	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + new Date());
-	return gulp.src(Path.img)
+	return gulp.src(Path.src.img)
 		// 开发环境
 		.pipe(liveReload())
-		.pipe(gulp.dest('dev/'))
+		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(imagemin())
-		.pipe(gulp.dest('dist/'))
+		.pipe(gulp.dest(Path.distRoot))
 		.pipe(size({showFiles: true}))
 	;
 });
 // 图片文件修改监听
-gulp.task('watchImg', () => gulp.watch(Path.img, ['compileImg']));
+gulp.task('watchImg', () => gulp.watch(Path.src.img, ['compileImg']));
 
 // html文件编译
 gulp.task('compileHtml', () => {
 	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + new Date());
-	return gulp.src(Path.html)
+	let meta = fs.readFileSync('./src/common/tpl/meta.tpl', "utf8");
+	let v = moment().format("YYYY-MM-DD_HH:mm:ss");
+	return gulp.src(Path.src.html)
 		// 开发环境
-		.pipe(gulp.dest('dev'))
+		.pipe(replace('${{meta}}', meta))
+		.pipe(replace('${{prefix}}', '../..'))
+		.pipe(replace('${{suffix}}', 'v=' + v))
+		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload())
 		// 正式环境
-		.pipe(replace('.css', '.min.css?v=' + Date.now()))
-		.pipe(replace('.js', '.min.js?v=' + Date.now()))
 		.pipe(minifyHtml())
-		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest(Path.distRoot))
 		.pipe(size({showFiles: true}))
 	;
 });
 // html文件修改监听
-gulp.task('watchHtml', () => gulp.watch(Path.html, ['compileHtml']));
+gulp.task('watchHtml', () => gulp.watch(Path.src.html, ['compileHtml']));

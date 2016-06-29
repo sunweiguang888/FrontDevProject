@@ -10,7 +10,7 @@ function Demo() {
 	var $div = swg('div');
     this.name = '哈哈哈';
     var tpl = require('../tpl/demo.tpl')({a: Date.now()});
-	document.body.innerHTML = tpl;
+	//document.body.innerHTML = tpl;
 	//require('../scss/demo.scss');
     var json = require('../json/demo.json');
 

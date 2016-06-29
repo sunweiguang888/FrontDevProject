@@ -23,7 +23,7 @@ module.exports = {
 		var entry = {}, filePath;
 		for (var i = 0; i < files.length; i++) {
 			filePath = './' + files[i];
-			entry[filePath.replace('./src/', '')] = filePath;		// entry名即为发布路径
+			entry[filePath.replace('./src/', '').replace('.js', '.bundle.js')] = filePath;		// entry名即为发布路径
 		}
 		entry.common = ['templateHelper', 'jQuery', 'util', 'swg', 'sizzle'];
 		console.log(entry);
@@ -52,6 +52,6 @@ module.exports = {
 		// 给webpack编译过的js文件加banner
 		//new webpack.BannerPlugin('This file is created by swg ' + new Date()), 已经通过gulp来加了
 		// 将公共代码抽离出来合并为一个文件
-		new webpack.optimize.CommonsChunkPlugin('common', 'common/js/common.bundle.js')	// 'templateHelper',
+		new webpack.optimize.CommonsChunkPlugin('common', 'common/js/common.bundle.js')
 	]
 };
