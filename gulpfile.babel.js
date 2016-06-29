@@ -85,7 +85,7 @@ gulp.task('compileJs', () => {
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
 		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
-		.pipe(gulp.dest('dev/js'))
+		.pipe(gulp.dest('dev/'))
 		.pipe(liveReload())
 		// 正式环境
 		.pipe(uglify({
@@ -94,7 +94,7 @@ gulp.task('compileJs', () => {
 			preserveComments: 'none'  // all保留所有注释
 		}))
 		.pipe(rename({suffix: '.min'}))
-		.pipe(gulp.dest('dist/js'))
+		.pipe(gulp.dest('dist'))
 		.pipe(size({showFiles: true}))
 	;
 });
