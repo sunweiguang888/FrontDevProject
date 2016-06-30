@@ -45,9 +45,9 @@ Path.src = {
 		Path.srcRoot + '/**/*.gif'
 	],
 	html: Path.srcRoot + '/**/*.html',
-	create: [
-		Path.srcRoot + '/module/create/*.html',
-		Path.srcRoot + '/module/create/*/*'
+	generator: [
+		'src/generator/*.html',
+		'src/generator/*/*'
 	]
 };
 
@@ -197,7 +197,8 @@ gulp.task('create', () => {
 		}
 	]).then((answer) => {
 		console.log(answer);
-		gulp.src(Path.src.create)
+		var distDir = './src/module/'+answer.module;
+		gulp.src(Path.src.generator)
 			.pipe(rename({
 				basename: answer.module
 			}))
@@ -205,8 +206,11 @@ gulp.task('create', () => {
 			.pipe(replace('${{title}}', answer.title))
 			.pipe(replace('${{desc}}', answer.desc))
 			.pipe(replace('${{author}}', answer.author))
-			.pipe(gulp.dest('./src/module/'+answer.module+'/'))
+			.pipe(gulp.dest(distDir))
 		;
+		setTimeout(function(){
+			fs.mkdirSync(distDir + '/img')
+		}, 3000);
 		console.log('>>>>>>>>>>>>>>> '+answer.module+'模块创建完毕。' + getNow());
 	});
 });
