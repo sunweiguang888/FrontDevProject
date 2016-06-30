@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "gulp",
-    "deploy": "gulp deploy"
+    "deploy": "gulp deploy",
+    "create": "gulp create"
   },
   "repository": {
     "type": "git",
@@ -47,5 +48,9 @@
     "tmodjs-loader": "^1.0.1",
     "url-loader": "^0.5.7",
     "webpack-stream": "^3.2.0"
+  },
+  "dependencies": {
+    "inquirer": "^1.1.0",
+    "moment": "^2.13.0"
   }
 }

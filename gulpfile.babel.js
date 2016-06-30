@@ -17,7 +17,7 @@ import imagemin from 'gulp-imagemin';		// 图片压缩
 import	liveReload from 'gulp-livereload';		// 文件变化时自动刷新浏览器，chrome需要安装LiveReload插件
 import	minifyCss from 'gulp-minify-css';		// css压缩
 import	replace from 'gulp-replace';		// 文件清除
-import	clean from 'gulp-clean';	// css压缩
+import	clean from 'gulp-clean';	// 清除目录下的内容
 import	runSequence from 'run-sequence';	// 使gulp任务按顺序执行，因为gulp里任务默认是异步执行的
 import 	webpack from 'webpack-stream';		//webpack
 import	autoprefixer from 'gulp-autoprefixer';		// 自动添加css前缀
@@ -26,23 +26,34 @@ import	size from 'gulp-size';		// 显示gulp.dest输出到磁盘上的文件尺�
 import	sourcemaps from 'gulp-sourcemaps';		// 生成sourcemaps
 import	fs from 'fs';		// 文件操作模块
 import	moment from 'moment';		// 时间格式化
+import	inquirer from 'inquirer';		// 控制台接收输入
 
 const Path = {
-    src: {
-        root: 'src',
-        css: 'src/**/*.scss',
-        js: ['src/module/*/js/*.js', 'src/common/js/*.js'],
-        img: [
-            'src/**/*.png',
-            'src/**/*.jpg',
-            'src/**/*.gif'
-        ],
-        html: 'src/**/*.html',
-    },
-    devRoot: 'dev',
-	distRoot: 'dist',
+	srcRoot: 'src',
+	devRoot: 'dev',
+	distRoot: 'dist'
+};
+Path.src = {
+	css: Path.srcRoot + '/**/*.scss',
+	js: [
+		Path.srcRoot + '/module/*/js/*.js',
+		Path.srcRoot + '/common/js/*.js'
+	],
+	img: [
+		Path.srcRoot + '/**/*.png',
+		Path.srcRoot + '/**/*.jpg',
+		Path.srcRoot + '/**/*.gif'
+	],
+	html: Path.srcRoot + '/**/*.html',
+	create: [
+		Path.srcRoot + '/module/create/*.html',
+		Path.srcRoot + '/module/create/*/*'
+	]
 };
 
+function getNow(){
+	return moment().format("YYYY-MM-DD HH:mm:ss");
+}
 
 // ************************************ 文件编译(npm start) ************************************
 // 任务入口
@@ -57,7 +68,7 @@ gulp.task('default', [], () => {
 		'compileHtml',
 		'watchHtml',
 		function(){
-			console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + new Date());
+			console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + getNow());
 		}
 	);
 });
@@ -65,14 +76,14 @@ gulp.task('default', [], () => {
 gulp.task('clean', () => gulp.src(Path.devRoot).pipe(clean()) && gulp.src('dist').pipe(clean()));
 // sass文件编译
 gulp.task('compileSass', () => {
-	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + new Date());
+	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + getNow());
 	return gulp.src(Path.src.css)		// return这个流是为了保证任务按顺序执行
 		// 开发环境
 		.pipe(sourcemaps.init())	// 放到最开始才能对应原始的scss文件
 		.pipe(sass({outputStyle: 'uncompressed'}))
 		.pipe(autoprefixer())
 		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
-		//.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
+		//.pipe(header('\/* This css was compiled at '+ getNow() +'. *\/\n'))
 		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload())
 		// 正式环境
@@ -90,11 +101,11 @@ gulp.task('watchSass', () => {
 
 // js文件编译（webpack）
 gulp.task('compileJs', () => {
-	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + new Date());
+	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + getNow());
 	return gulp.src('123')
 		// 开发环境
 		.pipe(webpack(require("./webpack.config.js")))
-		.pipe(header('\/* This css was compiled at '+ new Date() +'. *\/\n'))
+		.pipe(header('\/* This css was compiled at '+ getNow() +'. *\/\n'))
 		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload())
 		// 正式环境
@@ -115,7 +126,7 @@ gulp.task('watchJs', () => {
 
 // 图片文件编译
 gulp.task('compileImg', () => {
-	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + new Date());
+	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + getNow());
 	return gulp.src(Path.src.img)
 		// 开发环境
 		.pipe(liveReload())
@@ -132,7 +143,7 @@ gulp.task('watchImg', () => gulp.watch(Path.src.img, ['compileImg']));
 
 // html文件编译
 gulp.task('compileHtml', () => {
-	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + new Date());
+	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + getNow());
 	let meta = fs.readFileSync('./src/common/tpl/meta.tpl', "utf8");
 	let v = moment().format("YYYY-MM-DD_HH:mm:ss");
 	return gulp.src(Path.src.html)
@@ -150,3 +161,52 @@ gulp.task('compileHtml', () => {
 });
 // html文件修改监听
 gulp.task('watchHtml', () => gulp.watch(Path.src.html, ['compileHtml']));
+
+// 创建新模块
+gulp.task('create', () => {
+	console.log('>>>>>>>>>>>>>>> 开始创建新模块。' + getNow());
+	inquirer.prompt([
+		{
+			type: 'input',
+			name: 'module',
+			message: 'please input module\'s name ?',
+			validate: function (input) {
+				return input ? true : false;
+			}
+		},{
+			type: 'input',
+			name: 'desc',
+			message: 'please input module\'s description ?',
+			validate: function (input) {
+				return input ? true : false;
+			}
+		},{
+			type: 'input',
+			name: 'title',
+			message: 'please input page\'s title ?',
+			validate: function (input) {
+				return input ? true : false;
+			}
+		},{
+			type: 'input',
+			name: 'author',
+			message: 'please input your name ?',
+			validate: function (input) {
+				return input ? true : false;
+			}
+		}
+	]).then((answer) => {
+		console.log(answer);
+		gulp.src(Path.src.create)
+			.pipe(rename({
+				basename: answer.module
+			}))
+			.pipe(replace('${{module}}', answer.module))
+			.pipe(replace('${{title}}', answer.title))
+			.pipe(replace('${{desc}}', answer.desc))
+			.pipe(replace('${{author}}', answer.author))
+			.pipe(gulp.dest('./src/module/'+answer.module+'/'))
+		;
+		console.log('>>>>>>>>>>>>>>> '+answer.module+'模块创建完毕。' + getNow());
+	});
+});
