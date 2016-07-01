@@ -1,11 +1,11 @@
-/**
- * Created by weiguangsun on 2016/4/21.
- */
+function Util() {
 
-function Demo() {
+}
 
+Util.prototype = {
 
 };
-new Demo();
-Demo.prototype.www = function(){}
-module.exports = Demo;
+
+Util.prototype.constructor = Util;
+
+module.exports = Util;

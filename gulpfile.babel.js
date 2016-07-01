@@ -34,10 +34,11 @@ const Path = {
 	distRoot: 'dist'
 };
 Path.src = {
-	css: Path.srcRoot + '/**/*.scss',
+	css: [
+		Path.srcRoot + '/**/*.scss'
+	],
 	js: [
-		Path.srcRoot + '/module/*/js/*.js',
-		Path.srcRoot + '/common/js/*.js'
+		Path.srcRoot + '/**/*.js'
 	],
 	img: [
 		Path.srcRoot + '/**/*.png',
@@ -46,8 +47,8 @@ Path.src = {
 	],
 	html: Path.srcRoot + '/**/*.html',
 	generator: [
-		'src/generator/*.html',
-		'src/generator/*/*'
+		'generator/*.html',
+		'generator/*/*'
 	]
 };
 

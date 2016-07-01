@@ -14,7 +14,7 @@ template.helper('dateFormat', function (timestamp, pattern) {
 			return "0" + num;
 		}
 		return num;
-	}
+	};
 	return (function(date, format) {
 		if(date instanceof Date){
 		}else if(typeof date === 'number'){
