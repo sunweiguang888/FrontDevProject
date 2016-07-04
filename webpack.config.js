@@ -13,9 +13,9 @@ module.exports = {
 		alias: {
 			jQuery: __dirname + '/lib/js/jquery-3.0.0.min.js',
 			sizzle: __dirname + '/lib/js/sizzle.min.js',
-			templateHelper: __dirname + '/src/common/js/templateHelper.js',
-			util: __dirname + '/src/common/js/util.js',
-			swg: __dirname + '/src/common/js/swg.js'
+			templateHelper: __dirname + '/src/util/js/templateHelper.js',
+			util: __dirname + '/src/util/js/util.js',
+			swg: __dirname + '/src/util/js/swg.js'
 		}
 	},
 	entry: function entries(regexPath) {
@@ -40,7 +40,7 @@ module.exports = {
 			{test: /\.scss$/, loader: 'style!css!sass'},	// sass-loader 加载sass文件。等价于上面数组写法。
 			{test: /\.tpl$/, loader: "tmodjs"},	// artTemplate的webpack版
 			{test: /\.json$/, loader: "json"},	// json-loader，.json一般用于放假数据
-			//{test: /\.png$/, loader: "url-loader?limit=102400" }	引起gulp-uglify报错，原因不详// require100KB以下的图片将得到base64编码
+			//{test: /\.png$/, loader: "url-loader?limit=102400" }	//引起gulp-uglify报错，原因不详// require100KB以下的图片将得到base64编码
 		]
 	},
 	plugins: [

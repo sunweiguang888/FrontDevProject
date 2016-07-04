@@ -1,0 +1,1 @@
+<script src="${{prefix}}/common/js/remRootSize.js?${{suffix}}"></script>
