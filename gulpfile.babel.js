@@ -40,17 +40,19 @@ Path.src = {
 	],
 	js: {
 		common: Path.srcRoot + '/common/js/*.js',
-		webpack: Path.srcRoot + '/**/*.js'
+		webpack: Path.srcRoot + '/module/**/*.js'
 	},
 	img: [
 		Path.srcRoot + '/*(module|common)/**/img/*.png',
 		Path.srcRoot + '/*(module|common)/**/img/*.jpg',
 		Path.srcRoot + '/*(module|common)/**/img/*.gif'
 	],
-	html: Path.srcRoot + '/**/*.html',
+	html: [
+		Path.srcRoot + '/**/*.html'
+	],
 	generator: [
-		'generator/*.html',
-		'generator/*/*'
+		'src/generator/*.html',
+		'src/generator/*/*'
 	]
 };
 
@@ -189,6 +191,10 @@ gulp.task('create', () => {
 			}
 		},{
 			type: 'input',
+			name: 'file',
+			message: 'please input file\'s name ?'
+		},{
+			type: 'input',
 			name: 'desc',
 			message: 'please input module\'s description ?',
 			validate: function (input) {
@@ -211,20 +217,24 @@ gulp.task('create', () => {
 		}
 	]).then((answer) => {
 		console.log(answer);
-		var distDir = './src/module/'+answer.module;
+		var distDir = Path.srcRoot + '/module/'+answer.module,
+			file = answer.file || answer.module;
 		gulp.src(Path.src.generator)
 			.pipe(rename({
-				basename: answer.module
+				basename: file
 			}))
 			.pipe(replace('${{module}}', answer.module))
+			.pipe(replace('${{file}}', answer.file))
 			.pipe(replace('${{title}}', answer.title))
 			.pipe(replace('${{desc}}', answer.desc))
 			.pipe(replace('${{author}}', answer.author))
 			.pipe(gulp.dest(distDir))
 		;
-		setTimeout(function(){
-			fs.mkdirSync(distDir + '/img')
-		}, 3000);
+		if(!fs.checkResExist(distDir + '/img')){
+			setTimeout(function(){
+				fs.mkdirSync(distDir + '/img')
+			}, 3000);
+		}
 		console.log('>>>>>>>>>>>>>>> '+answer.module+'模块创建完毕。' + getNow());
 	});
 });
