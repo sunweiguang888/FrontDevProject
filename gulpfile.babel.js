@@ -4,7 +4,6 @@
  * 由gulpfile.js命名为gulpfile.babel.js，gulp读取配置文件时自动调用babel，
  * 前提需要先安装babel-core、babel-preset-es2015、babel-preset-stage-0
  */
-
 // 引入组件
 import gulp from 'gulp';
 //$ = require('gulp-load-plugins')(),		//插件加载器，启动加载devDependencies中所有插件
@@ -27,29 +26,20 @@ import	sourcemaps from 'gulp-sourcemaps';		// 生成sourcemaps
 import	fs from 'fs';		// 文件操作模块
 import	moment from 'moment';		// 时间格式化
 import	inquirer from 'inquirer';		// 控制台接收输入
-import	babel from 'gulp-babel';		//
+import	babel from 'gulp-babel';		// es6编译
 
+
+// ************************************ 变量Path ************************************
 const Path = {
 	srcRoot: 'src',
 	devRoot: 'dev',
 	distRoot: 'dist'
 };
 Path.src = {
-	css: [
-		Path.srcRoot + '/*(module|common)/**/css/*.scss'
-	],
-	js: {
-		common: Path.srcRoot + '/common/js/*.js',
-		webpack: Path.srcRoot + '/module/**/*.js'
-	},
-	img: [
-		Path.srcRoot + '/*(module|common)/**/img/*.png',
-		Path.srcRoot + '/*(module|common)/**/img/*.jpg',
-		Path.srcRoot + '/*(module|common)/**/img/*.gif'
-	],
-	html: [
-		Path.srcRoot + '/**/*.html'
-	],
+	css: Path.srcRoot + '/*(module|common)/**/css/*.scss',
+	js: Path.srcRoot + '/common/**/js/*.js',		// common由于nodejs负责，module由webpack负责
+	img: Path.srcRoot + '/*(module|common)/**/img/*',
+	html: Path.srcRoot + '/*(module|common)/**/*.html',
 	generator: [
 		'src/generator/*.html',
 		'src/generator/*/*'
@@ -60,66 +50,100 @@ function getNow(){
 	return moment().format("YYYY-MM-DD HH:mm:ss");
 }
 
-// ************************************ 文件编译(npm start) ************************************
-// 任务入口
-gulp.task('default', [], () => {
-	runSequence('clean',
-		'compileSass',
-		'watchSass',
-		'compileJs',
-		'watchJs',
-		'compileImg',
-		'watchImg',
-		'compileHtml',
-		'watchHtml',
-		function(){
-			console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + getNow());
-		}
-	);
+// ************************************ 编译目录清理 ************************************
+gulp.task('task_clean_dev', () => gulp.src(Path.devRoot).pipe(clean()));
+gulp.task('task_clean_dist', () => gulp.src(Path.distRoot).pipe(clean()));
+
+// ************************************ 编译HTML ************************************
+function compileHtml(){
+	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + getNow());
+	let meta = fs.readFileSync('./src/util/tpl/meta.tpl', "utf8");
+	let remRootSize = fs.readFileSync('./src/util/tpl/remRootSize.tpl', "utf8");
+	let v = moment().format("YYYY-MM-DD_HH:mm:ss");
+	return gulp.src(Path.src.html)
+		.pipe(replace('${{meta}}', meta))
+		.pipe(replace('${{remRootSize}}', remRootSize))
+		.pipe(replace('${{prefix}}', '../..'))
+		.pipe(replace('${{suffix}}', 'v=' + v));
+}
+gulp.task('task_html_dev', () => {
+	return compileHtml()
+		.pipe(gulp.dest(Path.devRoot))
+		.pipe(liveReload());
 });
-// sass目录清理
-gulp.task('clean', () => gulp.src(Path.devRoot).pipe(clean()) && gulp.src('dist').pipe(clean()));
-// sass文件编译
-gulp.task('compileSass', () => {
-	console.log('>>>>>>>>>>>>>>> sass文件开始编译。' + getNow());
+gulp.task('task_html_dist', () => {
+	return compileHtml()
+		.pipe(minifyHtml())
+		.pipe(gulp.dest(Path.distRoot))
+		.pipe(size({showFiles: true}));
+});
+
+// ************************************ 编译CSS ************************************
+function compileCss(){
+	console.log('>>>>>>>>>>>>>>> css文件开始编译。' + getNow());
 	return gulp.src(Path.src.css)		// return这个流是为了保证任务按顺序执行
 		// 开发环境
 		.pipe(sourcemaps.init())	// 放到最开始才能对应原始的scss文件
 		.pipe(sass({outputStyle: 'uncompressed'}))
-		.pipe(autoprefixer())
+		.pipe(autoprefixer());
+}
+gulp.task('task_css_dev', () => {
+	return compileCss()
 		.pipe(sourcemaps.write('./'))	// 写到目标css同级目录下
 		//.pipe(header('\/* This css was compiled at '+ getNow() +'. *\/\n'))
 		.pipe(gulp.dest(Path.devRoot))
-		.pipe(liveReload())
-		// 正式环境
+		.pipe(liveReload());
+});
+gulp.task('task_css_dist', () => {
+	return compileCss()
 		.pipe(minifyCss())
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest(Path.distRoot))
-		.pipe(size({showFiles: true}))
-	;
-});
-// sass文件修改监听
-gulp.task('watchSass', () => {
-	liveReload.listen();	//开启liveReload
-	gulp.watch(Path.src.css, ['compileSass']);
+		.pipe(size({showFiles: true}));
 });
 
-// js文件编译（webpack）
-gulp.task('compileJs', () => {
+// ************************************ 编译图片 ************************************
+function compileImg(){
+	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + getNow());
+	return gulp.src(Path.src.img);
+}
+gulp.task('task_img_dev', () => {
+	return compileImg()
+		.pipe(gulp.dest(Path.devRoot))
+		.pipe(liveReload());
+});
+gulp.task('task_img_dist', () => {
+	return compileImg()
+		.pipe(imagemin())
+		.pipe(gulp.dest(Path.distRoot))
+		.pipe(size({showFiles: true}));
+});
+
+// ************************************ 编译JS ************************************
+function compileJs(env){
 	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + getNow());
-	gulp.src(Path.src.js.common)
-		.pipe(gulp.dest(Path.devRoot+'/common/js/'))
-		.pipe(gulp.dest(Path.distRoot+'/common/js/'));
-	return gulp.src('123')
-		// 开发环境
-		.pipe(webpack(require("./webpack.config.js")))
+	if(env == 'dev'){
+		gulp.src(Path.src.js)
+			.pipe(gulp.dest(Path.devRoot+'/common/'));
+	}else if(env == 'dist'){
+		gulp.src(Path.src.js)
+			.pipe(gulp.dest(Path.distRoot+'/common/'));
+	}
+	let webpackConfig = require("./webpack.config.js");
+	return gulp.src('')
+		.pipe(webpack(webpackConfig))
 		//.pipe(babel({		与tmodjs冲突，弃用
 		//	//presets: ['es2015']
 		//}))
-		.pipe(header('\/* This css was compiled at '+ getNow() +'. *\/\n'))
+		.pipe(header('\/* This css was compiled at '+ getNow() +'. *\/\n'));
+}
+gulp.task('task_js_dev', () => {
+	return compileJs('dev')
 		.pipe(gulp.dest(Path.devRoot))
-		.pipe(liveReload())
-		// 正式环境
+		.pipe(liveReload());
+});
+gulp.task('task_js_dist', () => {
+	return compileJs('dist')
 		.pipe(uglify({
 			mangle: true,  // 类型：Boolean 默认：true 是否修改变量名
 			compress: true,  // 类型：Boolean 默认：true 是否完全压缩
@@ -127,58 +151,58 @@ gulp.task('compileJs', () => {
 		}))
 		.pipe(rename({suffix: '.min'}))
 		.pipe(gulp.dest('dist'))
-		.pipe(size({showFiles: true}))
-	;
-});
-// js文件修改监听
-gulp.task('watchJs', () => {
-	gulp.watch([
-		Path.src.js.webpack,
-		Path.src.js.common
-	], ['compileJs']);
+		.pipe(size({showFiles: true}));
 });
 
-// 图片文件编译
-gulp.task('compileImg', () => {
-	console.log('>>>>>>>>>>>>>>> 图片文件开始编译。' + getNow());
-	return gulp.src(Path.src.img)
-		// 开发环境
-		.pipe(liveReload())
-		.pipe(gulp.dest(Path.devRoot))
-		.pipe(liveReload())
-		// 正式环境
-		//.pipe(imagemin())
-		.pipe(gulp.dest(Path.distRoot))
-		.pipe(size({showFiles: true}))
-	;
+// ************************************ 文件编译+监听(npm start) ************************************
+// 任务入口
+gulp.task('default', [], () => {
+	runSequence(
+		'task_clean_dev',
+		'task_html_dev',
+		'task_css_dev',
+		'task_img_dev',
+		'task_js_dev',
+		function(){
+			console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + getNow());
+			// 开启liveReload
+			liveReload.listen();
+			// 开始监视
+			gulp.watch([
+				Path.src.html,
+				Path.srcRoot + '/util/**/*.html'
+			], ['task_html_dev']);
+			gulp.watch([
+				Path.src.css,
+				Path.srcRoot + '/util/**/css/*.scss'
+			], ['task_css_dev']);
+			gulp.watch([
+				Path.src.img,
+				Path.srcRoot + '/util/**/*.img'
+			], ['task_img_dev']);
+			gulp.watch([
+				Path.src.js,
+				Path.srcRoot + '/util/**/*.js'
+			], ['task_js_dev']);
+		}
+	);
 });
-// 图片文件修改监听
-gulp.task('watchImg', () => gulp.watch(Path.src.img, ['compileImg']));
 
-// html文件编译
-gulp.task('compileHtml', () => {
-	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + getNow());
-	let meta = fs.readFileSync('./src/util/tpl/meta.tpl', "utf8");
-	let remRootSize = fs.readFileSync('./src/util/tpl/remRootSize.tpl', "utf8");
-	let v = moment().format("YYYY-MM-DD_HH:mm:ss");
-	return gulp.src(Path.src.html)
-		// 开发环境
-		.pipe(replace('${{meta}}', meta))
-		.pipe(replace('${{remRootSize}}', remRootSize))
-		.pipe(replace('${{prefix}}', '../..'))
-		.pipe(replace('${{suffix}}', 'v=' + v))
-		.pipe(gulp.dest(Path.devRoot))
-		.pipe(liveReload())
-		// 正式环境
-		.pipe(minifyHtml())
-		.pipe(gulp.dest(Path.distRoot))
-		.pipe(size({showFiles: true}))
-	;
+// ************************************ 文件编译(npm run build) ************************************
+gulp.task('build', [], () => {
+	runSequence(
+		'task_clean_dist',
+		'task_html_dist',
+		'task_css_dist',
+		'task_img_dist',
+		'task_js_dist',
+		function(){
+			console.log('>>>>>>>>>>>>>>> gulp全部任务执行完毕。' + getNow());
+		}
+	);
 });
-// html文件修改监听
-gulp.task('watchHtml', () => gulp.watch(Path.src.html, ['compileHtml']));
 
-// 创建新模块
+// ************************************ 创建新模块(npm run create) ************************************
 gulp.task('create', () => {
 	console.log('>>>>>>>>>>>>>>> 开始创建新模块。' + getNow());
 	inquirer.prompt([
@@ -195,13 +219,6 @@ gulp.task('create', () => {
 			message: 'please input file\'s name ?'
 		},{
 			type: 'input',
-			name: 'desc',
-			message: 'please input module\'s description ?',
-			validate: function (input) {
-				return input ? true : false;
-			}
-		},{
-			type: 'input',
 			name: 'title',
 			message: 'please input page\'s title ?',
 			validate: function (input) {
@@ -209,8 +226,16 @@ gulp.task('create', () => {
 			}
 		},{
 			type: 'input',
+			name: 'desc',
+			message: 'please input module\'s description ?',
+			validate: function (input) {
+				return input ? true : false;
+			}
+		},{
+			type: 'input',
 			name: 'author',
 			message: 'please input your name ?',
+			default: 'swg',
 			validate: function (input) {
 				return input ? true : false;
 			}
@@ -224,17 +249,15 @@ gulp.task('create', () => {
 				basename: file
 			}))
 			.pipe(replace('${{module}}', answer.module))
-			.pipe(replace('${{file}}', answer.file))
+			.pipe(replace('${{file}}', file))
 			.pipe(replace('${{title}}', answer.title))
 			.pipe(replace('${{desc}}', answer.desc))
 			.pipe(replace('${{author}}', answer.author))
 			.pipe(gulp.dest(distDir))
 		;
-		if(!fs.checkResExist(distDir + '/img')){
-			setTimeout(function(){
-				fs.mkdirSync(distDir + '/img')
-			}, 3000);
-		}
-		console.log('>>>>>>>>>>>>>>> '+answer.module+'模块创建完毕。' + getNow());
+		setTimeout(function(){
+			fs.mkdirSync('./'+distDir + '/img/')
+		}, 1000);
+		console.log('>>>>>>>>>>>>>>> '+answer.module+'模块'+file+'文件创建完毕。' + getNow());
 	});
 });
