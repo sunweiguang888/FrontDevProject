@@ -37,7 +37,7 @@ const Path = {
 };
 Path.src = {
 	css: Path.srcRoot + '/*(module|common)/**/css/*.scss',
-	js: Path.srcRoot + '/common/**/js/*.js',		// common由于nodejs负责，module由webpack负责
+	js: Path.srcRoot + '/common/**/js/*.js',	// common由nodejs负责，module由webpack负责
 	img: Path.srcRoot + '/*(module|common)/**/img/*',
 	html: Path.srcRoot + '/*(module|common)/**/*.html',
 	generator: [
@@ -46,13 +46,21 @@ Path.src = {
 	]
 };
 
+/* 获取当前格式化时间 */
 function getNow(){
-	return moment().format("YYYY-MM-DD HH:mm:ss");
+	var m = moment();
+	return m.format("YYYY-MM-DD HH:mm:ss ") + m.millisecond();
 }
 
 // ************************************ 编译目录清理 ************************************
-gulp.task('task_clean_dev', () => gulp.src(Path.devRoot).pipe(clean()));
-gulp.task('task_clean_dist', () => gulp.src(Path.distRoot).pipe(clean()));
+gulp.task('task_clean_dev', () => {
+	gulp.src(Path.devRoot).pipe(clean());
+	console.log('>>>>>>>>>>>>>>> 开发目录清理完毕。' + getNow());
+});
+gulp.task('task_clean_dist', () => {
+	gulp.src(Path.distRoot).pipe(clean())
+	console.log('>>>>>>>>>>>>>>> 上线目录清理完毕。' + getNow());
+});
 
 // ************************************ 编译HTML ************************************
 function compileHtml(){
@@ -254,10 +262,10 @@ gulp.task('create', () => {
 			.pipe(replace('${{desc}}', answer.desc))
 			.pipe(replace('${{author}}', answer.author))
 			.pipe(gulp.dest(distDir))
+			.on('end', function(){
+				fs.mkdir('./'+distDir + '/img')
+			})
 		;
-		setTimeout(function(){
-			fs.mkdirSync('./'+distDir + '/img/')
-		}, 1000);
 		console.log('>>>>>>>>>>>>>>> '+answer.module+'模块'+file+'文件创建完毕。' + getNow());
 	});
 });
