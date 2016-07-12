@@ -190,7 +190,8 @@ gulp.task('default', [], () => {
 			], ['task_img_dev']);
 			gulp.watch([
 				Path.src.js,
-				Path.srcRoot + '/util/**/*.js'
+				Path.srcRoot + '/util/**/*.js',
+				Path.srcRoot + '/module/**/*.js'
 			], ['task_js_dev']);
 		}
 	);
