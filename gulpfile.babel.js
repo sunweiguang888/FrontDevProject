@@ -63,24 +63,31 @@ gulp.task('task_clean_dist', () => {
 });
 
 // ************************************ 编译HTML ************************************
-function compileHtml(){
+function compileHtml(env){
 	console.log('>>>>>>>>>>>>>>> html文件开始编译。' + getNow());
 	let meta = fs.readFileSync('./src/util/tpl/meta.tpl', "utf8");
 	let remRootSize = fs.readFileSync('./src/util/tpl/remRootSize.tpl', "utf8");
 	let v = moment().format("YYYY-MM-DD_HH:mm:ss");
+	let min = null;
+	if(env == 'dev'){
+		min = '.min';
+	}else if(env == 'dist'){
+		min = '.min';
+	}
 	return gulp.src(Path.src.html)
 		.pipe(replace('${{meta}}', meta))
 		.pipe(replace('${{remRootSize}}', remRootSize))
 		.pipe(replace('${{prefix}}', '../..'))
-		.pipe(replace('${{suffix}}', 'v=' + v));
+		.pipe(replace('${{suffix}}', 'v=' + v))
+		.pipe(replace('${{min}}', min));
 }
 gulp.task('task_html_dev', () => {
-	return compileHtml()
+	return compileHtml('dev')
 		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload());
 });
 gulp.task('task_html_dist', () => {
-	return compileHtml()
+	return compileHtml('dist')
 		.pipe(minifyHtml())
 		.pipe(gulp.dest(Path.distRoot))
 		.pipe(size({showFiles: true}));
