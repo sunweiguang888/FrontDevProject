@@ -54,12 +54,12 @@ function getNow(){
 
 // ************************************ 编译目录清理 ************************************
 gulp.task('task_clean_dev', () => {
-	gulp.src(Path.devRoot).pipe(clean());
-	console.log('>>>>>>>>>>>>>>> 开发目录清理完毕。' + getNow());
+	console.log('>>>>>>>>>>>>>>> 开发目录开始清理。' + getNow());
+	return gulp.src(Path.devRoot).pipe(clean());
 });
 gulp.task('task_clean_dist', () => {
-	gulp.src(Path.distRoot).pipe(clean())
-	console.log('>>>>>>>>>>>>>>> 上线目录清理完毕。' + getNow());
+	console.log('>>>>>>>>>>>>>>> 上线目录开始清理。' + getNow());
+	return gulp.src(Path.distRoot).pipe(clean())
 });
 
 // ************************************ 编译HTML ************************************
@@ -70,7 +70,7 @@ function compileHtml(env){
 	let v = moment().format("YYYY-MM-DD_HH:mm:ss");
 	let min = null;
 	if(env == 'dev'){
-		min = '.min';
+		min = '';
 	}else if(env == 'dist'){
 		min = '.min';
 	}
