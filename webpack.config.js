@@ -15,6 +15,7 @@ module.exports = {
 			sizzle: __dirname + '/lib/js/sizzle.min.js',
 			templateHelper: __dirname + '/src/util/js/templateHelper.js',
 			util: __dirname + '/src/util/js/util.js',
+			ua: __dirname + '/src/util/js/ua.js',
 			swg: __dirname + '/src/util/js/swg.js'
 		}
 	},
@@ -25,7 +26,7 @@ module.exports = {
 			filePath = './' + files[i];
 			entry[filePath.replace('./src/', '').replace('.js', '.bundle.js')] = filePath;		// entry名即为发布路径
 		}
-		entry.common = ['templateHelper', 'jQuery', 'util'/*, 'swg', 'sizzle'*/];
+		entry.common = ['templateHelper', 'jQuery', 'util'/*, 'swg', 'sizzle'*/, 'ua'];
 		console.log(entry);
 		return entry;
 	}('src/module/*/js/*.js'),

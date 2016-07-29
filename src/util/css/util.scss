@@ -3,3 +3,21 @@
 /*页面容器宽度*/
 $containerMaxWidth: 640px;
 $containerMinWidth: 320px;
+
+/*
+  功能：文本溢出显示省略号
+  @param {number} $line-clamp 文本行数.
+*/
+@mixin ellipsis($line-clamp: 1) {
+  @if($line-clamp == 1){
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }@else{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $line-clamp;
+  }
+}
