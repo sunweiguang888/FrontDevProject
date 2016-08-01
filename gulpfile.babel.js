@@ -137,13 +137,6 @@ gulp.task('task_img_dist', () => {
 // ************************************ 编译JS ************************************
 function compileJs(env){
 	console.log('>>>>>>>>>>>>>>> js文件开始编译。' + getNow());
-	if(env == 'dev'){
-		gulp.src(Path.src.js)
-			.pipe(gulp.dest(Path.devRoot+'/common/'));
-	}else if(env == 'dist'){
-		gulp.src(Path.src.js)
-			.pipe(gulp.dest(Path.distRoot+'/common/'));
-	}
 	let webpackConfig = require("./webpack.config.js");
 	return gulp.src('')
 		.pipe(webpack(webpackConfig))
@@ -153,11 +146,21 @@ function compileJs(env){
 		.pipe(header('\/* This css was compiled at '+ getNow() +'. *\/\n'));
 }
 gulp.task('task_js_dev', () => {
+	gulp.src(Path.src.js)
+		.pipe(gulp.dest(Path.devRoot+'/common/'));
 	return compileJs('dev')
 		.pipe(gulp.dest(Path.devRoot))
 		.pipe(liveReload());
 });
 gulp.task('task_js_dist', () => {
+	gulp.src(Path.src.js)
+		.pipe(uglify({
+			mangle: true,  // 类型：Boolean 默认：true 是否修改变量名
+			compress: true,  // 类型：Boolean 默认：true 是否完全压缩
+			preserveComments: 'none'  // all保留所有注释
+		}))
+		.pipe(rename({suffix: '.min'}))
+		.pipe(gulp.dest(Path.distRoot+'/common/'));
 	return compileJs('dist')
 		.pipe(uglify({
 			mangle: true,  // 类型：Boolean 默认：true 是否修改变量名
@@ -165,7 +168,7 @@ gulp.task('task_js_dist', () => {
 			preserveComments: 'none'  // all保留所有注释
 		}))
 		.pipe(rename({suffix: '.min'}))
-		.pipe(gulp.dest('dist'))
+		.pipe(gulp.dest(Path.distRoot))
 		.pipe(size({showFiles: true}));
 });
 

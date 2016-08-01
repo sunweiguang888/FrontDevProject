@@ -1,1 +1,1 @@
-<script src="${{prefix}}/common/js/remRootSize.js?${{suffix}}"></script>
+<script src="${{prefix}}/common/js/remRootSize${{min}}.js?${{suffix}}"></script>
